@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tech Talk Official — Explore the Tech Universe</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810; --bg2: #0a0f1e; --bg3: #0f1630;
+  --accent: #00f5c4; --accent2: #7c5cfc; --accent3: #ff6b6b;
+  --text: #e8eaf6; --muted: #7b82a0;
+  --border: rgba(0,245,196,0.15); --card: rgba(15,22,48,0.8);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 20% 20%, rgba(124,92,252,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(0,245,196,0.06) 0%, transparent 50%);
+  animation: bgMove 20s ease infinite alternate; pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(0,245,196,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,245,196,0.03) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none; z-index: 0;
+}
+@keyframes bgMove { 0% { transform: translate(0,0); } 100% { transform: translate(3%,3%); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(5,8,16,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: 'Space Mono', monospace; font-size: 1.1rem; color: var(--accent); text-decoration: none; }
+.logo span { color: var(--text); }
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: color 0.2s; }
+.nav-links a:hover { color: var(--accent); }
+.nav-cta { background: var(--accent); color: var(--bg); padding: 0.5rem 1.25rem; border-radius: 6px; font-size: 0.875rem; font-weight: 700; text-decoration: none; }
+.hero { min-height: 100vh; display: flex; align-items: center; padding: 6rem 0 4rem; position: relative; }
+.hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,245,196,0.08); border: 1px solid rgba(0,245,196,0.2); padding: 0.4rem 1rem; border-radius: 100px; font-size: 0.75rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1.5rem; animation: fadeUp 0.6s ease forwards; }
+.hero-badge::before { content: '●'; animation: pulse 2s infinite; }
+h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.05; letter-spacing: -2px; margin-bottom: 1.5rem; animation: fadeUp 0.6s 0.1s ease both; }
+h1 .highlight { color: var(--accent); }
+h1 .highlight2 { color: var(--accent2); }
+.hero-desc { font-size: 1.1rem; color: var(--muted); line-height: 1.7; margin-bottom: 2.5rem; animation: fadeUp 0.6s 0.2s ease both; max-width: 560px; }
+.hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; animation: fadeUp 0.6s 0.3s ease both; }
+.btn-primary { background: var(--accent); color: var(--bg); padding: 0.875rem 2rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: transform 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+.btn-primary:hover { transform: translateY(-2px); }
+.btn-secondary { border: 1px solid var(--border); color: var(--text); padding: 0.875rem 2rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.hero-stats { display: flex; gap: 3rem; margin-top: 4rem; animation: fadeUp 0.6s 0.4s ease both; }
+.stat-num { font-size: 2rem; font-weight: 800; color: var(--accent); font-family: 'Space Mono', monospace; }
+.stat-label { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+section { padding: 5rem 0; position: relative; z-index: 1; }
+.section-tag { font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; font-family: 'Space Mono', monospace; }
+.section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; letter-spacing: -1px; margin-bottom: 1rem; line-height: 1.1; }
+.section-desc { color: var(--muted); font-size: 1rem; line-height: 1.7; max-width: 560px; }
+.courses-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+.course-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; transition: transform 0.2s, border-color 0.2s; cursor: pointer; position: relative; overflow: hidden; }
+.course-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); opacity: 0; transition: opacity 0.2s; }
+.course-card:hover { transform: translateY(-4px); border-color: rgba(0,245,196,0.3); }
+.course-card:hover::before { opacity: 1; }
+.course-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem; }
+.course-level { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; margin-bottom: 0.75rem; display: inline-block; }
+.level-beginner { background: rgba(0,245,196,0.1); color: var(--accent); }
+.level-intermediate { background: rgba(124,92,252,0.1); color: var(--accent2); }
+.level-advanced { background: rgba(255,107,107,0.1); color: var(--accent3); }
+.course-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+.course-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
+.course-meta { display: flex; gap: 1rem; font-size: 0.75rem; color: var(--muted); flex-wrap: wrap; }
+.topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 3rem; }
+.topic-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
+.topic-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.topic-num { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--accent); margin-bottom: 0.5rem; }
+.topic-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+.topic-count { font-size: 0.8rem; color: var(--muted); }
+.resources-list { margin-top: 3rem; display: flex; flex-direction: column; gap: 1rem; }
+.resource-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; }
+.resource-item:hover { border-color: rgba(0,245,196,0.3); }
+.resource-info { display: flex; align-items: center; gap: 1rem; }
+.resource-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+.resource-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
+.resource-desc { font-size: 0.8rem; color: var(--muted); }
+.resource-badge { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; background: rgba(0,245,196,0.1); color: var(--accent); flex-shrink: 0; }
+.blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+.blog-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: transform 0.2s, border-color 0.2s; cursor: pointer; }
+.blog-card:hover { transform: translateY(-4px); border-color: rgba(0,245,196,0.3); }
+.blog-thumb { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+.blog-body { padding: 1.25rem; }
+.blog-tag { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+.blog-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.4; }
+.blog-meta { font-size: 0.75rem; color: var(--muted); display: flex; gap: 1rem; }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-top: 3rem; }
+.about-channel { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; text-align: center; }
+.channel-avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--accent2), var(--accent)); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+.channel-name { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.25rem; }
+.channel-handle { font-size: 0.85rem; color: var(--accent); font-family: 'Space Mono', monospace; margin-bottom: 1rem; }
+.channel-stats { display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; }
+.ch-stat-num { font-size: 1.4rem; font-weight: 800; color: var(--accent); font-family: 'Space Mono', monospace; }
+.ch-stat-label { font-size: 0.7rem; color: var(--muted); }
+.about-text h2 { font-size: 2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 1rem; }
+.about-text p { color: var(--muted); line-height: 1.8; margin-bottom: 1rem; font-size: 0.95rem; }
+.about-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1.5rem; }
+.about-tag { background: rgba(0,245,196,0.08); border: 1px solid rgba(0,245,196,0.2); color: var(--accent); padding: 4px 12px; border-radius: 100px; font-size: 0.8rem; font-weight: 600; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; }
+.contact-form { display: flex; flex-direction: column; gap: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 0.8rem; font-weight: 700; color: var(--muted); letter-spacing: 0.5px; }
+.form-group input, .form-group textarea { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.9rem; transition: border-color 0.2s; resize: vertical; }
+.form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent); }
+.form-group textarea { min-height: 120px; }
+.contact-info { display: flex; flex-direction: column; gap: 1.5rem; }
+.contact-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; }
+.contact-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; background: rgba(0,245,196,0.08); }
+.contact-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 2px; }
+.contact-value { font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 3rem 0 2rem; position: relative; z-index: 1; }
+.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-logo { font-family: 'Space Mono', monospace; font-size: 1rem; color: var(--accent); }
+.footer-links { display: flex; gap: 1.5rem; }
+.footer-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+.footer-links a:hover { color: var(--accent); }
+.footer-copy { color: var(--muted); font-size: 0.8rem; margin-top: 1.5rem; text-align: center; }
+.social-link { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--muted); text-decoration: none; transition: all 0.2s; }
+.social-link:hover { border-color: var(--accent); color: var(--accent); }
+.section-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+.reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@media(max-width:768px) { .nav-links { display: none; } .about-grid, .contact-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+    <nav>
+  <div class="container nav-inner">
+    <a href="#" class="logo">Tech<span>.talk</span></a>
+    <ul class="nav-links">
+      <li><a href="#courses">Courses</a></li>
+      <li><a href="#topics">Topics</a></li>
+      <li><a href="#resources">Resources</a></li>
+      <li><a href="#blog">Blog</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="https://instagram.com/tech.talk_official" target="_blank" class="nav-cta">Follow on Instagram</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">🚀 India's Tech Learning Platform</div>
+      <h1>Explore the<br><span class="highlight">Tech Universe</span><br>with <span class="highlight2">Tech Talk</span></h1>
+      <p class="hero-desc">From AI to Web Dev, QA Automation to Tech News — learn everything that matters in tech, explained simply, in your language.</p>
+      <div class="hero-btns">
+        <a href="#courses" class="btn-primary">Start Learning →</a>
+        <a href="#resources" class="btn-secondary">Free Resources ↓</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num">37+</div><div class="stat-label">Free Lessons</div></div>
+        <div class="stat"><div class="stat-num">5</div><div class="stat-label">Courses</div></div>
+        <div class="stat"><div class="stat-num">61+</div><div class="stat-label">Students</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<section id="courses">
+  <div class="container reveal">
+    <div class="section-tag">// Courses</div>
+    <h2 class="section-title">Learn at Your Own Pace</h2>
+    <p class="section-desc">Structured courses from beginner to advanced. Each course includes video lessons, notes, and hands-on projects.</p>
+    <div class="courses-grid">
+      <div class="course-card" onclick="window.location.href='ai-ml-course.html'">
+        <div class="course-icon" style="background:rgba(0,245,196,0.1)">🤖</div>
+        <div class="course-level level-beginner">Beginner</div>
+        <div class="course-title">AI & Machine Learning Fundamentals</div>
+        <div class="course-desc">Learn what AI really is, how ML models work, and how to use AI tools in your daily workflow.</div>
+        <div class="course-meta"><span>📚 12 Lessons</span><span>⏱ 3 Hours</span><span>🆓 Free</span></div>
+      </div>
+      <div class="course-card" onclick="window.location.href='webdev-course.html'">
+        <div class="course-icon" style="background:rgba(124,92,252,0.1)">💻</div>
+        <div class="course-level level-beginner">Beginner</div>
+        <div class="course-title">Web Development Bootcamp</div>
+        <div class="course-desc">HTML, CSS, JavaScript से शुरू करो। Build real websites from scratch with modern techniques.</div>
+        <div class="course-meta"><span>📚 20 Lessons</span><span>⏱ 6 Hours</span><span>🆓 Free</span></div>
+      </div>
+      <div class="course-card" onclick="window.location.href='qa-course.html'">
+        <div class="course-icon" style="background:rgba(255,107,107,0.1)">🧪</div>
+        <div class="course-level level-intermediate">Intermediate</div>
+        <div class="course-title">QA Automation with Playwright</div>
+        <div class="course-desc">Master test automation using Playwright. Write tests, run them, and become a QA rockstar.</div>
+        <div class="course-meta"><span>📚 15 Lessons</span><span>⏱ 4 Hours</span><span>🆓 Free</span></div>
+      </div>
+      <div class="course-card" onclick="window.location.href='python-course.html'">
+        <div class="course-icon" style="background:rgba(0,245,196,0.1)">🐍</div>
+        <div class="course-level level-beginner">Beginner</div>
+        <div class="course-title">Python for Beginners</div>
+        <div class="course-desc">Start coding in Python from zero. Variables, loops, functions, and your first Python project.</div>
+        <div class="course-meta"><span>📚 18 Lessons</span><span>⏱ 5 Hours</span><span>🆓 Free</span></div>
+      </div>
+      <div class="course-card" onclick="window.location.href='ai-agents-course.html'">
+        <div class="course-icon" style="background:rgba(124,92,252,0.1)">📱</div>
+        <div class="course-level level-advanced">Advanced</div>
+        <div class="course-title">Build AI Agents from Scratch</div>
+        <div class="course-desc">LangChain, APIs, and automation. Build real AI agents that work in the real world.</div>
+        <div class="course-meta"><span>📚 10 Lessons</span><span>⏱ 3 Hours</span><span>🔜 Coming Soon</span></div>
+      </div>
+      <div class="course-card" onclick="window.location.href='devops-course.html'">
+        <div class="course-icon" style="background:rgba(255,107,107,0.1)">☁️</div>
+        <div class="course-level level-intermediate">Intermediate</div>
+        <div class="course-title">Cloud & DevOps Basics</div>
+        <div class="course-desc">AWS, Docker, CI/CD pipelines. Everything a modern developer needs to know about the cloud.</div>
+        <div class="course-meta"><span>📚 14 Lessons</span><span>⏱ 4 Hours</span><span>🔜 Coming Soon</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+  
+<hr class="section-divider">
+
+<section id="topics">
+  <div class="container reveal">
+    <div class="section-tag">// Topics</div>
+    <h2 class="section-title">Browse by Topic</h2>
+    <p class="section-desc">Explore articles, tutorials, and quick guides on every major tech topic.</p>
+    <div class="topics-grid">
+      <a class="topic-card" href="#"><div class="topic-num">01</div><div class="topic-name">Artificial Intelligence</div><div class="topic-count">12 articles</div></a>
+      <a class="topic-card" href="#"><div class="topic-num">02</div><div class="topic-name">Web Development</div><div class="topic-count">18 articles</div></a>
+      <a class="topic-card" href="#"><div class="topic-num">03</div><div class="topic-name">QA Automation</div><div class="topic-count">9 articles</div></a>
+      <a class="topic-card" href="#"><div class="topic-num">04</div><div class="topic-name">Python</div><div class="topic-count">14 articles</div></a>
+      <a class="topic-card" href="#"><div class="topic-num">05</div><div class="topic-name">Tech News</div><div class="topic-count">25 articles</div></a>
+      <a class="topic-card" href="#"><div class="topic-num">06</div><div class="topic-name">Career in Tech</div><div class="topic-count">7 articles</div></a>
+      <a class="topic-card" href="#"><div class="topic-num">07</div><div class="topic-name">Cloud & DevOps</div><div class="topic-count">8 articles</div></a>
+      <a class="topic-card" href="#"><div class="topic-num">08</div><div class="topic-name">Open Source</div><div class="topic-count">5 articles</div></a>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<section id="resources">
+  <div class="container reveal">
+    <div class="section-tag">// Free Resources</div>
+    <h2 class="section-title">Download & Learn</h2>
+    <p class="section-desc">Free cheatsheets, notes, and reference guides. Download, save, and use whenever you need.</p>
+    <div class="resources-list">
+      <div class="resource-item">
+        <div class="resource-info"><div class="resource-icon" style="background:rgba(0,245,196,0.1)">📄</div><div><div class="resource-name">Python Cheatsheet</div><div class="resource-desc">All Python basics in one page — syntax, functions, OOP</div></div></div>
+        <span class="resource-badge">FREE PDF</span>
+      </div>
+      <div class="resource-item">
+        <div class="resource-info"><div class="resource-icon" style="background:rgba(124,92,252,0.1)">📄</div><div><div class="resource-name">HTML & CSS Quick Reference</div><div class="resource-desc">Tags, selectors, flexbox, grid — complete reference card</div></div></div>
+        <span class="resource-badge">FREE PDF</span>
+      </div>
+      <div class="resource-item">
+        <div class="resource-info"><div class="resource-icon" style="background:rgba(255,107,107,0.1)">📄</div><div><div class="resource-name">Playwright Testing Guide</div><div class="resource-desc">Commands, locators, assertions — QA automation made easy</div></div></div>
+        <span class="resource-badge">FREE PDF</span>
+      </div>
+      <div class="resource-item">
+        <div class="resource-info"><div class="resource-icon" style="background:rgba(0,245,196,0.1)">📄</div><div><div class="resource-name">AI Tools Handbook 2025</div><div class="resource-desc">Top 50 AI tools every developer should know and use</div></div></div>
+        <span class="resource-badge">FREE PDF</span>
+      </div>
+      <div class="resource-item">
+        <div class="resource-info"><div class="resource-icon" style="background:rgba(124,92,252,0.1)">📄</div><div><div class="resource-name">JavaScript Interview Prep</div><div class="resource-desc">Top 100 JS interview questions with detailed answers</div></div></div>
+        <span class="resource-badge">FREE PDF</span>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="section-divider">
+
+<section id="blog">
+  <div class="container reveal">
+    <div class="section-tag">// Blog</div>
+    <h2 class="section-title">Latest Posts</h2>
+    <p class="section-desc">In-depth articles on trending tech topics. No fluff — just value.</p>
+    <div class="blog-grid">
+      <div class="blog-card">
+        <div class="blog-thumb" style="background:linear-gradient(135deg,#0a0f1e,#1a0a2e)">🤖</div>
+        <div class="blog-body"><div class="blog-tag">AI & ML</div><div class="blog-title">AI Agents in 2025: What You Need to Know Right Now</div><div class="blog-meta"><span>5 min read</span><span>Jun 2025</span></div></div>
+      </div>
+      <div class="blog-card">
+        <div class="blog-thumb" style="background:linear-gradient(135deg,#0a1e0a,#0a2e1a)">⚡</div>
+        <div class="blog-body"><div class="blog-tag">Web Dev</div><div class="blog-title">React vs Next.js in 2025 — Which One Should You Learn?</div><div class="blog-meta"><span>7 min read</span><span>Jun 2025</span></div></div>
+      </div>
+      <div class="blog-card">
+        <div class="blog-thumb" style="background:linear-gradient(135deg,#1e0a0a,#2e1a0a)">🧪</div>
+        <div class="blog-body"><div class="blog-tag">QA Automation</div><div class="blog-title">Playwright vs Selenium: The Definitive 2025 Comparison</div><div class="blog-meta"><span>8 min read</span><span>May 2025</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<section id="about">
+  <div class="container reveal">
+    <div class="section-tag">// About</div>
+    <h2 class="section-title">About the Channel</h2>
+    <div class="about-grid">
+      <div class="about-channel">
+        <div class="channel-avatar">💻</div>
+        <div class="channel-name">Tech Talk Official</div>
+        <div class="channel-handle">@tech.talk_official</div>
+        <p style="font-size:0.85rem;color:var(--muted);line-height:1.7">Exploring the Tech Universe — one post at a time.</p>
+        <div class="channel-stats">
+          <div><div class="ch-stat-num">37</div><div class="ch-stat-label">Posts</div></div>
+          <div><div class="ch-stat-num">61</div><div class="ch-stat-label">Followers</div></div>
+          <div><div class="ch-stat-num">300+</div><div class="ch-stat-label">Avg Views</div></div>
+        </div>
+      </div>
+      <div class="about-text">
+        <h2>Making Tech Simple for Everyone</h2>
+        <p>Tech Talk Official is a platform dedicated to making technology accessible to every Indian tech enthusiast — whether you're a student, working professional, or just curious about the tech world.</p>
+        <p>We cover AI & ML, Web Development, QA Automation, emerging technologies, and the latest tech news — explained simply.</p>
+        <p>Our mission: no jargon, no fluff — just real knowledge that helps you grow in your tech career.</p>
+        <div class="about-tags">
+          <span class="about-tag">AI & ML</span>
+          <span class="about-tag">Web Dev</span>
+          <span class="about-tag">QA Automation</span>
+          <span class="about-tag">Python</span>
+          <span class="about-tag">Tech News</span>
+          <span class="about-tag">Made in India 🇮🇳</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<section id="contact">
+  <div class="container reveal">
+    <div class="section-tag">// Contact</div>
+    <h2 class="section-title">Get in Touch</h2>
+    <p class="section-desc">Collaboration, sponsorship, or just want to say hello? Reach out!</p>
+    <div class="contact-grid">
+      <form class="contact-form" onsubmit="handleSubmit(event)">
+        <div class="form-group"><label>YOUR NAME</label><input type="text" placeholder="Enter your name"></div>
+        <div class="form-group"><label>EMAIL ADDRESS</label><input type="email" placeholder="your@email.com"></div>
+        <div class="form-group"><label>MESSAGE</label><textarea placeholder="Tell us what's on your mind..."></textarea></div>
+        <button type="submit" class="btn-primary" style="border:none;cursor:pointer;width:fit-content">Send Message →</button>
+      </form>
+      <div class="contact-info">
+        <div class="contact-item"><div class="contact-icon">📸</div><div><div class="contact-label">Instagram</div><div class="contact-value">@tech.talk_official</div></div></div>
+        <div class="contact-item"><div class="contact-icon">📧</div><div><div class="contact-label">Email</div><div class="contact-value">techtalkofficial@gmail.com</div></div></div>
+        <div class="contact-item"><div class="contact-icon">📍</div><div><div class="contact-label">Location</div><div class="contact-value">Maharashtra, India 🇮🇳</div></div></div>
+        <div class="contact-item"><div class="contact-icon">💼</div><div><div class="contact-label">Collaborations</div><div class="contact-value">Open for partnerships</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Tech.talk_official</div>
+      <div class="footer-links">
+        <a href="#courses">Courses</a>
+        <a href="#resources">Resources</a>
+        <a href="#blog">Blog</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <a href="https://instagram.com/tech.talk_official" class="social-link" target="_blank">📸</a>
+    </div>
+    <div class="footer-copy">© 2025 Tech Talk Official. Made with ❤️ in Maharashtra, India.</div>
+  </div>
+</footer>
+
+<script>
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+reveals.forEach(el => observer.observe(el));
+function handleSubmit(e) { e.preventDefault(); alert('Message sent! We will get back to you soon 🚀'); }
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  navLinks.forEach(link => {
+    const section = document.querySelector(link.getAttribute('href'));
+    if (section) {
+      const top = section.offsetTop - 100;
+      const bottom = top + section.offsetHeight;
+      if (window.scrollY >= top && window.scrollY < bottom) {
+        navLinks.forEach(l => l.style.color = '');
+        link.style.color = 'var(--accent)';
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>

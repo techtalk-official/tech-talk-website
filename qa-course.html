@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Automation with Playwright — Tech Talk Official</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810; --bg2: #0a0f1e; --bg3: #0f1630;
+  --accent: #ff6b6b; --accent2: #00f5c4; --accent3: #7c5cfc;
+  --text: #e8eaf6; --muted: #7b82a0;
+  --border: rgba(255,107,107,0.15); --card: rgba(15,22,48,0.8);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 20% 20%, rgba(255,107,107,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(0,245,196,0.06) 0%, transparent 50%);
+  animation: bgMove 20s ease infinite alternate; pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(255,107,107,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,107,107,0.03) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none; z-index: 0;
+}
+@keyframes bgMove { 0% { transform: translate(0,0); } 100% { transform: translate(3%,3%); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(5,8,16,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: 'Space Mono', monospace; font-size: 1.1rem; color: var(--accent); text-decoration: none; }
+.logo span { color: var(--text); }
+.back-btn { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: color 0.2s; }
+.back-btn:hover { color: var(--accent); }
+.course-hero { padding: 8rem 0 4rem; position: relative; z-index: 1; }
+.course-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); padding: 0.4rem 1rem; border-radius: 100px; font-size: 0.75rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1.5rem; animation: fadeUp 0.6s ease forwards; }
+.course-hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 1rem; animation: fadeUp 0.6s 0.1s ease both; }
+.course-hero h1 span { color: var(--accent); }
+.course-hero p { font-size: 1.1rem; color: var(--muted); line-height: 1.7; max-width: 600px; margin-bottom: 2rem; animation: fadeUp 0.6s 0.2s ease both; }
+.course-meta-bar { display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 2.5rem; animation: fadeUp 0.6s 0.3s ease both; }
+.meta-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--muted); font-weight: 500; }
+.meta-item span { color: var(--text); font-weight: 700; }
+.enroll-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #fff; padding: 0.875rem 2rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: transform 0.2s; animation: fadeUp 0.6s 0.4s ease both; border: none; cursor: pointer; }
+.enroll-btn:hover { transform: translateY(-2px); }
+.course-layout { display: grid; grid-template-columns: 1fr 340px; gap: 2rem; padding: 3rem 0; position: relative; z-index: 1; }
+@media(max-width:900px) { .course-layout { grid-template-columns: 1fr; } }
+.lessons-section h2 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 1.5rem; }
+.lesson-item { display: flex; align-items: flex-start; gap: 1rem; padding: 1.25rem; background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 0.75rem; transition: all 0.2s; cursor: pointer; }
+.lesson-item:hover { border-color: var(--accent); transform: translateX(4px); }
+.lesson-num { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--accent); flex-shrink: 0; font-family: 'Space Mono', monospace; }
+.lesson-info { flex: 1; }
+.lesson-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+.lesson-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+.lesson-duration { font-size: 0.75rem; color: var(--muted); flex-shrink: 0; margin-top: 2px; }
+.sidebar-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; position: sticky; top: 5rem; }
+.sidebar-card h3 { font-size: 1rem; font-weight: 800; margin-bottom: 1.25rem; }
+.sidebar-item { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.sidebar-item:last-child { border-bottom: none; }
+.sidebar-label { color: var(--muted); }
+.sidebar-value { font-weight: 700; color: var(--text); }
+.sidebar-value.free { color: var(--accent2); }
+.what-learn { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; }
+.what-learn h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 1.25rem; }
+.learn-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 0.75rem; font-size: 0.9rem; line-height: 1.5; }
+.learn-item::before { content: '✓'; color: var(--accent2); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 2rem 0; position: relative; z-index: 1; margin-top: 4rem; }
+.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-logo { font-family: 'Space Mono', monospace; font-size: 1rem; color: var(--accent); }
+.footer-copy { color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">Tech<span>.talk</span></a>
+    <a href="index.html" class="back-btn">← Back to Home</a>
+  </div>
+</nav>
+<section class="course-hero">
+  <div class="container">
+    <div class="course-badge">🧪 Intermediate Level</div>
+    <h1>QA Automation<br>with <span>Playwright</span></h1>
+    <p>Stop clicking manually — start automating. Learn Playwright from scratch and become the QA engineer every company wants to hire in 2025.</p>
+    <div class="course-meta-bar">
+      <div class="meta-item">📚 <span>15 Lessons</span></div>
+      <div class="meta-item">⏱ <span>4 Hours</span></div>
+      <div class="meta-item">🎯 <span>Intermediate</span></div>
+      <div class="meta-item">🆓 <span>100% Free</span></div>
+      <div class="meta-item">🇮🇳 <span>English + Hindi</span></div>
+    </div>
+    <a href="#lessons" class="enroll-btn">Start Learning Free →</a>
+  </div>
+</section>
+
+<div class="container">
+  <div class="what-learn">
+    <h2>What You'll Learn</h2>
+    <div class="learn-item">Understand QA testing — manual vs automation and when to use which</div>
+    <div class="learn-item">Set up Playwright from scratch and write your first test in minutes</div>
+    <div class="learn-item">Master locators, actions, and assertions — the core of every test</div>
+    <div class="learn-item">Build a clean Page Object Model architecture for scalable tests</div>
+    <div class="learn-item">Test REST APIs directly using Playwright's API testing features</div>
+    <div class="learn-item">Run tests automatically on every code push using GitHub Actions</div>
+    <div class="learn-item">Get a clear roadmap to land a QA Automation job in 2025</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="course-layout">
+    <div class="lessons-section">
+      <h2 id="lessons">Course Lessons</h2>
+
+      <div class="lesson-item">
+        <div class="lesson-num">01</div>
+        <div class="lesson-info">
+          <div class="lesson-title">What is QA Testing?</div>
+          <div class="lesson-desc">Manual vs automation testing — understand the difference, when to automate, and why QA is one of the most in-demand skills in tech.</div>
+        </div>
+        <div class="lesson-duration">12 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">02</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Why Playwright in 2025?</div>
+          <div class="lesson-desc">Selenium vs Playwright — a honest comparison. Why top companies are switching to Playwright and why you should learn it now.</div>
+        </div>
+        <div class="lesson-duration">15 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">03</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Setup & Installation</div>
+          <div class="lesson-desc">Install Node.js, Playwright, VS Code extension — complete environment setup. Run your first test in under 10 minutes.</div>
+        </div>
+        <div class="lesson-duration">18 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">04</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Your First Automated Test</div>
+          <div class="lesson-desc">Write, run, and understand your first real Playwright test. See the browser open, actions execute, and tests pass — live.</div>
+        </div>
+        <div class="lesson-duration">20 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">05</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Locators & Selectors</div>
+          <div class="lesson-desc">Find any element on a page — CSS selectors, XPath, role-based locators, text locators. Master the art of element selection.</div>
+        </div>
+        <div class="lesson-duration">22 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">06</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Actions & Interactions</div>
+          <div class="lesson-desc">Click, type, hover, scroll, drag & drop, file upload — automate every user interaction you can think of.</div>
+        </div>
+        <div class="lesson-duration">20 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">07</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Assertions — Verify Everything</div>
+          <div class="lesson-desc">expect(), toBe(), toHaveText(), toBeVisible() — write powerful assertions that catch real bugs before users do.</div>
+        </div>
+        <div class="lesson-duration">18 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">08</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Page Object Model</div>
+          <div class="lesson-desc">Write clean, maintainable tests — learn the Page Object Model design pattern used by professional QA engineers worldwide.</div>
+        </div>
+        <div class="lesson-duration">25 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">09</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Handling Forms & Inputs</div>
+          <div class="lesson-desc">Automate forms, dropdowns, checkboxes, radio buttons, date pickers, and file uploads — handle every form element confidently.</div>
+        </div>
+        <div class="lesson-duration">20 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">10</div>
+        <div class="lesson-info">
+          <div class="lesson-title">API Testing with Playwright</div>
+          <div class="lesson-desc">Test REST APIs directly — GET, POST, PUT, DELETE requests, response validation, and combining API + UI tests.</div>
+        </div>
+        <div class="lesson-duration">22 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">11</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Screenshots & Video Recording</div>
+          <div class="lesson-desc">Capture screenshots on failure, record test videos, use traces to debug exactly what went wrong — like a pro.</div>
+        </div>
+        <div class="lesson-duration">15 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">12</div>
+        <div class="lesson-info">
+          <div class="lesson-title">CI/CD with GitHub Actions</div>
+          <div class="lesson-desc">Run your tests automatically on every commit — set up a complete CI/CD pipeline with GitHub Actions in under 30 minutes.</div>
+        </div>
+        <div class="lesson-duration">25 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">13</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Cross Browser Testing</div>
+          <div class="lesson-desc">Run the same test on Chrome, Firefox, and Safari simultaneously — one test suite, all browsers, zero extra effort.</div>
+        </div>
+        <div class="lesson-duration">15 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">14</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Real Project — E-Commerce Testing</div>
+          <div class="lesson-desc">Test a complete e-commerce website end-to-end — login, search, add to cart, checkout. A real project for your portfolio.</div>
+        </div>
+        <div class="lesson-duration">35 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">15</div>
+        <div class="lesson-info">
+          <div class="lesson-title">QA Career Roadmap 2025</div>
+          <div class="lesson-desc">Jobs, salaries, resume tips, interview questions — everything you need to land a QA Automation job in India in 2025.</div>
+        </div>
+        <div class="lesson-duration">18 min</div>
+      </div>
+    </div>
+
+    <div class="course-sidebar">
+      <div class="sidebar-card">
+        <h3>Course Details</h3>
+        <div class="sidebar-item"><span class="sidebar-label">Level</span><span class="sidebar-value">Intermediate</span></div>
+        <div class="sidebar-item"><span class="sidebar-label">Lessons</span><span class="sidebar-value">15</span></div>
+        <div class="sidebar-item"><span class="sidebar-label">Duration</span><span class="sidebar-value">4 Hours</span></div>
+        <div class="sidebar-item"><span class="sidebar-label">Language</span><span class="sidebar-value">English + Hindi</span></div>
+        <div class="sidebar-item"><span class="sidebar-label">Certificate</span><span class="sidebar-value">Coming Soon</span></div>
+        <div class="sidebar-item"><span class="sidebar-label">Price</span><span class="sidebar-value free">FREE 🎉</span></div>
+        <br>
+        <a href="#lessons" class="enroll-btn" style="width:100%;justify-content:center">Start Now →</a>
+      </div>
+    </div>
+  </div>
+</div>
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Tech.talk_official</div>
+      <div class="footer-copy">© 2025 Tech Talk Official. Made with ❤️ in Maharashtra, India.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const lessons = document.querySelectorAll('.lesson-item');
+lessons.forEach(lesson => {
+  lesson.addEventListener('click', () => {
+    lessons.forEach(l => l.style.borderColor = '');
+    lesson.style.borderColor = 'var(--accent)';
+  });
+});
+</script>
+</body>
+</html>

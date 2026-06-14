@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Development Bootcamp — Tech Talk Official</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810; --bg2: #0a0f1e; --bg3: #0f1630;
+  --accent: #7c5cfc; --accent2: #00f5c4; --accent3: #ff6b6b;
+  --text: #e8eaf6; --muted: #7b82a0;
+  --border: rgba(124,92,252,0.15); --card: rgba(15,22,48,0.8);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 20% 20%, rgba(124,92,252,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(0,245,196,0.06) 0%, transparent 50%);
+  animation: bgMove 20s ease infinite alternate; pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(124,92,252,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(124,92,252,0.03) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none; z-index: 0;
+}
+@keyframes bgMove { 0% { transform: translate(0,0); } 100% { transform: translate(3%,3%); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(5,8,16,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: 'Space Mono', monospace; font-size: 1.1rem; color: var(--accent); text-decoration: none; }
+.logo span { color: var(--text); }
+.back-btn { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: color 0.2s; }
+.back-btn:hover { color: var(--accent); }
+.course-hero { padding: 8rem 0 4rem; position: relative; z-index: 1; }
+.course-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(124,92,252,0.08); border: 1px solid rgba(124,92,252,0.2); padding: 0.4rem 1rem; border-radius: 100px; font-size: 0.75rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1.5rem; animation: fadeUp 0.6s ease forwards; }
+.course-hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 1rem; animation: fadeUp 0.6s 0.1s ease both; }
+.course-hero h1 span { color: var(--accent); }
+.course-hero p { font-size: 1.1rem; color: var(--muted); line-height: 1.7; max-width: 600px; margin-bottom: 2rem; animation: fadeUp 0.6s 0.2s ease both; }
+.course-meta-bar { display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 2.5rem; animation: fadeUp 0.6s 0.3s ease both; }
+.meta-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--muted); font-weight: 500; }
+.meta-item span { color: var(--text); font-weight: 700; }
+.enroll-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #fff; padding: 0.875rem 2rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: transform 0.2s; animation: fadeUp 0.6s 0.4s ease both; border: none; cursor: pointer; }
+.enroll-btn:hover { transform: translateY(-2px); }
+.course-layout { display: grid; grid-template-columns: 1fr 340px; gap: 2rem; padding: 3rem 0; position: relative; z-index: 1; }
+@media(max-width:900px) { .course-layout { grid-template-columns: 1fr; } }
+.lessons-section h2 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 1.5rem; }
+.lesson-item { display: flex; align-items: flex-start; gap: 1rem; padding: 1.25rem; background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 0.75rem; transition: all 0.2s; cursor: pointer; }
+.lesson-item:hover { border-color: var(--accent); transform: translateX(4px); }
+.lesson-num { width: 36px; height: 36px; border-radius: 50%; background: rgba(124,92,252,0.1); border: 1px solid rgba(124,92,252,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--accent); flex-shrink: 0; font-family: 'Space Mono', monospace; }
+.lesson-info { flex: 1; }
+.lesson-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+.lesson-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+.lesson-duration { font-size: 0.75rem; color: var(--muted); flex-shrink: 0; margin-top: 2px; }
+.sidebar-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; position: sticky; top: 5rem; }
+.sidebar-card h3 { font-size: 1rem; font-weight: 800; margin-bottom: 1.25rem; }
+.sidebar-item { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.sidebar-item:last-child { border-bottom: none; }
+.sidebar-label { color: var(--muted); }
+.sidebar-value { font-weight: 700; color: var(--text); }
+.sidebar-value.free { color: var(--accent2); }
+.what-learn { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; }
+.what-learn h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 1.25rem; }
+.learn-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 0.75rem; font-size: 0.9rem; line-height: 1.5; }
+.learn-item::before { content: '✓'; color: var(--accent2); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 2rem 0; position: relative; z-index: 1; margin-top: 4rem; }
+.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-logo { font-family: 'Space Mono', monospace; font-size: 1rem; color: var(--accent); }
+.footer-copy { color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">Tech<span>.talk</span></a>
+    <a href="index.html" class="back-btn">← Back to Home</a>
+  </div>
+</nav>
+<section class="course-hero">
+  <div class="container">
+    <div class="course-badge">💻 Beginner Friendly</div>
+    <h1>Web Development<br><span>Bootcamp</span></h1>
+    <p>From zero to full-stack developer — learn HTML, CSS, JavaScript, React, Node.js and deploy your first real website. No experience needed, just dedication.</p>
+    <div class="course-meta-bar">
+      <div class="meta-item">📚 <span>20 Lessons</span></div>
+      <div class="meta-item">⏱ <span>6 Hours</span></div>
+      <div class="meta-item">🎯 <span>Beginner</span></div>
+      <div class="meta-item">🆓 <span>100% Free</span></div>
+      <div class="meta-item">🇮🇳 <span>English + Hindi</span></div>
+    </div>
+    <a href="#lessons" class="enroll-btn">Start Learning Free →</a>
+  </div>
+</section>
+
+<div class="container">
+  <div class="what-learn">
+    <h2>What You'll Learn</h2>
+    <div class="learn-item">Build real websites from scratch using HTML, CSS & JavaScript</div>
+    <div class="learn-item">Master Flexbox & Grid — create any layout you can imagine</div>
+    <div class="learn-item">Write modern JavaScript — ES6+, async/await, fetch API</div>
+    <div class="learn-item">Build dynamic React apps with hooks and components</div>
+    <div class="learn-item">Create your own backend API using Node.js & Express</div>
+    <div class="learn-item">Store data with MongoDB — full database integration</div>
+    <div class="learn-item">Deploy your website live on the internet for free</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="course-layout">
+    <div class="lessons-section">
+      <h2 id="lessons">Course Lessons</h2>
+
+      <div class="lesson-item">
+        <div class="lesson-num">01</div>
+        <div class="lesson-info">
+          <div class="lesson-title">How the Web Works</div>
+          <div class="lesson-desc">Browser, server, HTTP, DNS — understand what actually happens when you type a URL. The foundation every developer needs.</div>
+        </div>
+        <div class="lesson-duration">12 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">02</div>
+        <div class="lesson-info">
+          <div class="lesson-title">HTML Structure</div>
+          <div class="lesson-desc">Tags, elements, attributes, semantic HTML5 — write clean, accessible markup that search engines and browsers love.</div>
+        </div>
+        <div class="lesson-duration">18 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">03</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Your First Webpage</div>
+          <div class="lesson-desc">Hands-on! Build a complete webpage from scratch. By the end of this lesson, you'll have something real to show.</div>
+        </div>
+        <div class="lesson-duration">20 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">04</div>
+        <div class="lesson-info">
+          <div class="lesson-title">CSS Basics</div>
+          <div class="lesson-desc">Selectors, colors, typography, spacing, borders — make your webpage actually look good with CSS fundamentals.</div>
+        </div>
+        <div class="lesson-duration">22 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">05</div>
+        <div class="lesson-info">
+          <div class="lesson-title">CSS Layout — Flexbox & Grid</div>
+          <div class="lesson-desc">The two most powerful CSS tools. Master Flexbox and Grid and you can build any layout you see on the web.</div>
+        </div>
+        <div class="lesson-duration">25 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">06</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Responsive Design</div>
+          <div class="lesson-desc">Mobile-first development, media queries, viewport units — make your website look perfect on every screen size.</div>
+        </div>
+        <div class="lesson-duration">20 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">07</div>
+        <div class="lesson-info">
+          <div class="lesson-title">JavaScript Basics</div>
+          <div class="lesson-desc">Variables, data types, functions, conditionals, loops — JavaScript fundamentals that power every modern website.</div>
+        </div>
+        <div class="lesson-duration">25 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">08</div>
+        <div class="lesson-info">
+          <div class="lesson-title">JavaScript Events & DOM</div>
+          <div class="lesson-desc">Make your website interactive — handle clicks, form inputs, keyboard events, and manipulate the DOM dynamically.</div>
+        </div>
+        <div class="lesson-duration">22 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">09</div>
+        <div class="lesson-info">
+          <div class="lesson-title">ES6+ Modern JavaScript</div>
+          <div class="lesson-desc">Arrow functions, destructuring, spread operator, promises, async/await — write JavaScript like a pro in 2025.</div>
+        </div>
+        <div class="lesson-duration">20 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">10</div>
+        <div class="lesson-info">
+          <div class="lesson-title">DOM Manipulation Projects</div>
+          <div class="lesson-desc">Build 3 mini projects — todo list, calculator, quiz app. Real hands-on practice that cements your JS skills.</div>
+        </div>
+        <div class="lesson-duration">30 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">11</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Fetch API & JSON</div>
+          <div class="lesson-desc">Connect your website to real APIs — fetch live data, display it dynamically, and handle errors like a pro.</div>
+        </div>
+        <div class="lesson-duration">18 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">12</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Git & GitHub</div>
+          <div class="lesson-desc">Version control is non-negotiable. Learn Git commands, branching, and push your code to GitHub like every real developer.</div>
+        </div>
+        <div class="lesson-duration">20 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">13</div>
+        <div class="lesson-info">
+          <div class="lesson-title">React Introduction</div>
+          <div class="lesson-desc">Why React? Components, JSX, props — understand the building blocks of the most popular frontend framework in the world.</div>
+        </div>
+        <div class="lesson-duration">25 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">14</div>
+        <div class="lesson-info">
+          <div class="lesson-title">React Hooks</div>
+          <div class="lesson-desc">useState, useEffect, useContext — master the hooks that make React apps powerful, clean, and modern.</div>
+        </div>
+        <div class="lesson-duration">22 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">15</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Build a Complete React App</div>
+          <div class="lesson-desc">Full project — build a real React application end-to-end. This is the lesson that makes everything click.</div>
+        </div>
+        <div class="lesson-duration">35 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">16</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Node.js Basics</div>
+          <div class="lesson-desc">Step into backend development — understand Node.js, npm, modules, and how servers actually work.</div>
+        </div>
+        <div class="lesson-duration">20 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">17</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Express.js — Build Your Own API</div>
+          <div class="lesson-desc">Routes, middleware, REST APIs — build a complete backend API that your frontend can talk to.</div>
+        </div>
+        <div class="lesson-duration">25 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">18</div>
+        <div class="lesson-info">
+          <div class="lesson-title">MongoDB Basics</div>
+          <div class="lesson-desc">Store and retrieve real data — learn MongoDB, Mongoose, CRUD operations, and connect your database to your API.</div>
+        </div>
+        <div class="lesson-duration">22 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">19</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Full Stack Project</div>
+          <div class="lesson-desc">Connect everything — React frontend + Express backend + MongoDB database. Build a complete full stack app from scratch.</div>
+        </div>
+        <div class="lesson-duration">40 min</div>
+      </div>
+
+      <div class="lesson-item">
+        <div class="lesson-num">20</div>
+        <div class="lesson-info">
+          <div class="lesson-title">Deploy Your Website Live</div>
+          <div class="lesson-desc">Put your work on the internet — deploy frontend on Vercel, backend on Render, database on MongoDB Atlas. All free!</div>
+        </div>
+        <div class="lesson-duration">20 min</div>
+      </div>
+    </div>
+
+    <div class="course-sidebar">
+      <div class="sidebar-card">
+        <h3>Course Details</h3>
+        <div class="sidebar-item"><span class="sidebar-label">Level</span><span class="sidebar-value">Beginner</span></div>
+        <div class="sidebar-item"><span class="sidebar-label">Lessons</span><span class="sidebar-value">20</span></div>
+        <div class="sidebar-item"><span class="sidebar-label">Duration</span><span class="sidebar-value">6 Hours</span></div>
+        <div class="sidebar-item"><span class="sidebar-label">Language</span><span class="sidebar-value">English + Hindi</span></div>
+        <div class="sidebar-item"><span class="sidebar-label">Certificate</span><span class="sidebar-value">Coming Soon</span></div>
+        <div class="sidebar-item"><span class="sidebar-label">Price</span><span class="sidebar-value free">FREE 🎉</span></div>
+        <br>
+        <a href="#lessons" class="enroll-btn" style="width:100%;justify-content:center">Start Now →</a>
+      </div>
+    </div>
+  </div>
+</div>
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Tech.talk_official</div>
+      <div class="footer-copy">© 2025 Tech Talk Official. Made with ❤️ in Maharashtra, India.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const lessons = document.querySelectorAll('.lesson-item');
+lessons.forEach(lesson => {
+  lesson.addEventListener('click', () => {
+    lessons.forEach(l => l.style.borderColor = '');
+    lesson.style.borderColor = 'var(--accent)';
+  });
+});
+</script>
+</body>
+</html>

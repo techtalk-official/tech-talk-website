@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 7: Natural Language Processing — Tech Talk Official</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810; --bg2: #0a0f1e; --bg3: #0f1630;
+  --accent: #00f5c4; --accent2: #7c5cfc; --accent3: #ff6b6b;
+  --text: #e8eaf6; --muted: #7b82a0;
+  --border: rgba(0,245,196,0.15); --card: rgba(15,22,48,0.8);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 20% 20%, rgba(124,92,252,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(0,245,196,0.06) 0%, transparent 50%);
+  animation: bgMove 20s ease infinite alternate; pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(0,245,196,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,245,196,0.03) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none; z-index: 0;
+}
+@keyframes bgMove { 0% { transform: translate(0,0); } 100% { transform: translate(3%,3%); } }
+.container { max-width: 820px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(5,8,16,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: 'Space Mono', monospace; font-size: 1.1rem; color: var(--accent); text-decoration: none; }
+.logo span { color: var(--text); }
+.back-btn { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: color 0.2s; }
+.back-btn:hover { color: var(--accent); }
+.lesson-header { padding: 7rem 0 2rem; }
+.breadcrumb { font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem; font-family: 'Space Mono', monospace; }
+.breadcrumb a { color: var(--accent); text-decoration: none; }
+.lesson-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,245,196,0.08); border: 1px solid rgba(0,245,196,0.2); padding: 0.35rem 0.9rem; border-radius: 100px; font-size: 0.72rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1rem; }
+.lesson-header h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 0.75rem; }
+.lesson-meta { display: flex; gap: 1.5rem; color: var(--muted); font-size: 0.85rem; flex-wrap: wrap; }
+.lesson-body { padding: 1rem 0 3rem; font-size: 1rem; line-height: 1.9; }
+.lesson-body p { color: var(--text); margin-bottom: 1.2rem; }
+.lesson-body h2 { font-size: 1.4rem; font-weight: 800; color: var(--accent); margin: 2.5rem 0 1rem; letter-spacing: -0.5px; }
+.lesson-body h3 { font-size: 1.1rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
+.lesson-body strong { color: var(--accent2); }
+.lesson-body ul, .lesson-body ol { margin: 0 0 1.2rem 1.5rem; color: var(--text); }
+.lesson-body li { margin-bottom: 0.6rem; line-height: 1.7; }
+.lesson-body code { background: var(--bg3); padding: 2px 8px; border-radius: 5px; font-family: 'Space Mono', monospace; font-size: 0.85em; color: var(--accent); }
+.lesson-body pre { background: var(--bg3); border: 1px solid var(--border); padding: 1.25rem; border-radius: 10px; overflow-x: auto; margin: 1rem 0 1.5rem; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+.lesson-body pre code { background: none; padding: 0; color: var(--text); }
+.info-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.info-box .info-label { color: var(--accent); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+.info-box p:last-child { margin-bottom: 0; }
+.warning-box { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); border-left: 3px solid var(--accent3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.warning-box .info-label { color: var(--accent3); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+.success-box { background: rgba(0,245,196,0.06); border: 1px solid rgba(0,245,196,0.2); border-left: 3px solid var(--accent); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.success-box .info-label { color: var(--accent); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+.exercise-box { background: rgba(124,92,252,0.06); border: 1px solid rgba(124,92,252,0.2); border-left: 3px solid var(--accent2); border-radius: 8px; padding: 1.5rem; margin: 2rem 0; }
+.exercise-box .info-label { color: var(--accent2); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; display: block; }
+.exercise-box h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+.exercise-box p, .exercise-box li { font-size: 0.9rem; color: var(--muted); }
+.lesson-nav { display: flex; justify-content: space-between; gap: 1rem; padding: 2rem 0 4rem; border-top: 1px solid var(--border); margin-top: 2rem; flex-wrap: wrap; }
+.nav-link { display: flex; flex-direction: column; gap: 4px; padding: 1rem 1.5rem; background: var(--card); border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); transition: all 0.2s; flex: 1; min-width: 200px; }
+.nav-link:hover { border-color: var(--accent); transform: translateY(-2px); }
+.nav-link.next { text-align: right; }
+.nav-link .nav-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+.nav-link .nav-title { font-size: 0.95rem; font-weight: 700; }
+footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 2rem 0; position: relative; z-index: 1; }
+.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-logo { font-family: 'Space Mono', monospace; font-size: 1rem; color: var(--accent); }
+.footer-copy { color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">Tech<span>.talk</span></a>
+    <a href="ai-ml-course.html" class="back-btn">← Back to Course</a>
+  </div>
+</nav>
+<header class="lesson-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="ai-ml-course.html">AI & ML Fundamentals</a> / Lesson 07</div>
+    <div class="lesson-tag">🤖 Lesson 07 of 12</div>
+    <h1>Natural Language Processing</h1>
+    <div class="lesson-meta">
+      <span>⏱ 18 min read</span>
+      <span>💻 Hands-on Code</span>
+      <span>🎯 Beginner</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="lesson-body">
+
+    <p>Every time you ask Siri a question, get a movie recommendation from Netflix, or see Google auto-complete your search — NLP is working behind the scenes. Natural Language Processing is the branch of AI that deals with human language — text and speech. It's arguably the most impactful area of AI right now, because language is how humans communicate everything. In this lesson, we'll understand how machines process language and build three real NLP applications.</p>
+
+    <h2>The Core Problem — Language is Hard for Machines</h2>
+    <p>Human language is incredibly complex. Consider this sentence: <em>"I saw the man with the telescope."</em> Did you use the telescope to see the man? Or did you see a man who was carrying a telescope? Humans resolve this ambiguity instantly using context. Machines historically struggled enormously with it.</p>
+
+    <p>Language also changes constantly, carries cultural context, uses sarcasm, metaphor, and emotion — all things that are trivially easy for humans and fiendishly difficult for computers. This is why NLP was one of the hardest problems in AI for decades — until deep learning changed everything.</p>
+
+    <div class="info-box">
+      <span class="info-label">The revolution</span>
+      <p>Before 2017, NLP systems were complex rule-based pipelines. In 2017, Google published a paper called "Attention Is All You Need" introducing the <strong>Transformer architecture</strong>. This single paper unlocked GPT, BERT, ChatGPT, and every modern language AI. It's the most influential AI paper of the last decade.</p>
+    </div>
+
+    <h2>How Machines Understand Text — Step by Step</h2>
+
+    <h3>Step 1: Tokenization</h3>
+    <p>Machines can't read words — they only understand numbers. The first step is breaking text into <strong>tokens</strong> (words or word-pieces) and converting each token to a number. "Hello world" becomes [15496, 995] in GPT's tokenizer.</p>
+
+    <h3>Step 2: Word Embeddings</h3>
+    <p>Each token gets converted to a dense vector of numbers — typically 768 or more dimensions. This is called a <strong>word embedding</strong>. The magic: words with similar meanings end up with similar vectors. "King" - "Man" + "Woman" ≈ "Queen" — that's embeddings working.</p>
+
+    <h3>Step 3: Attention Mechanism</h3>
+    <p>The Transformer's key innovation: every word "attends to" every other word in the sentence, learning which words are most relevant to each other. When processing "bank" in "I went to the bank to fish," the model attends more to "fish" (river bank) than "money."</p>
+
+    <h2>Core NLP Tasks</h2>
+    <ul>
+      <li><strong>Sentiment Analysis</strong> — Is this review positive or negative?</li>
+      <li><strong>Text Classification</strong> — Is this email spam or not?</li>
+      <li><strong>Named Entity Recognition (NER)</strong> — Find all people, places, and organizations in text</li>
+      <li><strong>Machine Translation</strong> — Translate English to Hindi</li>
+      <li><strong>Text Generation</strong> — Complete this sentence...</li>
+      <li><strong>Question Answering</strong> — Given a passage, answer this question</li>
+      <li><strong>Summarization</strong> — Condense this 10-page article to 3 sentences</li>
+    </ul>
+
+    <h2>Build 3 Real NLP Applications</h2>
+    <p>Let's build three practical NLP tools using Python's most popular NLP library — <code>transformers</code> by HuggingFace.</p>
+
+    <pre><code># Install: pip install transformers torch
+# Note: First run downloads models (~500MB) — one time only
+
+from transformers import pipeline
+
+print("🤖 Loading NLP models...")</code></pre>
+
+    <h3>App 1 — Sentiment Analyzer</h3>
+    <pre><code># Sentiment Analysis — Is text positive or negative?
+sentiment = pipeline("sentiment-analysis")
+
+reviews = [
+    "This product is absolutely amazing! Best purchase I've made.",
+    "Terrible quality. Broke after 2 days. Complete waste of money.",
+    "It's okay, nothing special but does the job.",
+    "Mind-blowing! Exceeded all my expectations. 10/10 would recommend.",
+    "Worst customer service I've ever experienced. Never buying again."
+]
+
+print("\n📊 Sentiment Analysis Results:")
+print("-" * 50)
+for review in reviews:
+    result = sentiment(review)[0]
+    emoji = "✅" if result['label'] == 'POSITIVE' else "❌"
+    print(f"{emoji} {result['label']} ({result['score']*100:.1f}%)")
+    print(f"   Review: {review[:60]}...")
+    print()</code></pre>
+
+    <h3>App 2 — Text Summarizer</h3>
+    <pre><code># Text Summarization — Condense long text automatically
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+
+long_article = """
+Artificial intelligence has transformed the technology landscape over the past decade,
+with breakthroughs in machine learning, natural language processing, and computer vision
+reshaping industries from healthcare to finance. The development of large language models
+like GPT-4 and Google's Gemini has demonstrated unprecedented capabilities in understanding
+and generating human language. These models, trained on vast datasets of text from the
+internet, can write code, answer complex questions, translate languages, and engage in
+nuanced conversations. However, their deployment raises significant ethical questions
+about bias, misinformation, privacy, and the potential displacement of human workers.
+Researchers and policymakers are working to develop frameworks for responsible AI
+development that balance innovation with safety and fairness. The next frontier in AI
+research includes achieving more general reasoning capabilities, reducing computational
+costs, and improving the interpretability of these complex systems.
+"""
+
+summary = summarizer(long_article, max_length=80, min_length=30, do_sample=False)
+
+print("\n📝 Original text length:", len(long_article.split()), "words")
+print("📋 Summary length:", len(summary[0]['summary_text'].split()), "words")
+print("\n✅ Summary:")
+print(summary[0]['summary_text'])</code></pre>
+
+    <h3>App 3 — Question Answering System</h3>
+    <pre><code># Question Answering — Extract answers from text
+qa = pipeline("question-answering")
+
+context = """
+Python was created by Guido van Rossum and first released in 1991. It is a high-level,
+general-purpose programming language that emphasizes code readability. Python supports
+multiple programming paradigms, including procedural, object-oriented, and functional
+programming. It is widely used in web development, data science, artificial intelligence,
+scientific computing, and automation. Python's design philosophy emphasizes code readability
+and simplicity, using indentation to define code blocks. The Python Package Index (PyPI)
+contains over 400,000 packages that extend its capabilities.
+"""
+
+questions = [
+    "Who created Python?",
+    "When was Python first released?",
+    "How many packages does PyPI contain?",
+    "What programming paradigms does Python support?"
+]
+
+print("\n❓ Question Answering System:")
+print("-" * 50)
+for question in questions:
+    result = qa(question=question, context=context)
+    print(f"Q: {question}")
+    print(f"A: {result['answer']} (confidence: {result['score']*100:.1f}%)")
+    print()</code></pre>
+
+    <div class="success-box">
+      <span class="info-label">Run all three apps</span>
+      <p>Save everything in <code>nlp_apps.py</code> and run with <code>python nlp_apps.py</code>. The first run downloads the models (~500MB total). After that, they run locally with no internet needed. You'll have three working NLP applications in under 50 lines of code each.</p>
+    </div>
+
+    <h2>Build Your Own Sentiment Analyzer from Scratch</h2>
+    <p>Now let's go deeper — build a sentiment classifier trained on movie reviews, without using pre-built models:</p>
+
+    <pre><code>from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+import numpy as np
+
+# Training data — movie reviews
+train_reviews = [
+    "Amazing film, absolutely loved every minute",
+    "Brilliant acting and stunning visuals",
+    "One of the best movies I've ever seen",
+    "Incredibly moving and beautifully crafted",
+    "A masterpiece of modern cinema",
+    "Terrible waste of time and money",
+    "Boring, predictable, and poorly acted",
+    "Worst movie of the year without question",
+    "Complete disaster from start to finish",
+    "I walked out after 30 minutes it was so bad"
+]
+train_labels = [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]  # 1=positive, 0=negative
+
+# Convert text to numbers using TF-IDF
+vectorizer = TfidfVectorizer(ngram_range=(1, 2))
+X_train = vectorizer.fit_transform(train_reviews)
+
+# Train classifier
+classifier = LogisticRegression()
+classifier.fit(X_train, train_labels)
+
+# Test on new reviews
+new_reviews = [
+    "Absolutely fantastic, I loved it!",
+    "Complete rubbish, avoid at all costs",
+    "Pretty decent, worth watching once",
+    "Mind-blowing experience, 10/10"
+]
+
+X_new = vectorizer.transform(new_reviews)
+predictions = classifier.predict(X_new)
+probabilities = classifier.predict_proba(X_new)
+
+print("🎬 Custom Sentiment Classifier Results:")
+print("-" * 50)
+for review, pred, prob in zip(new_reviews, predictions, probabilities):
+    label = "POSITIVE 😊" if pred == 1 else "NEGATIVE 😞"
+    confidence = max(prob) * 100
+    print(f"{label} ({confidence:.1f}%): {review}")</code></pre>
+
+    <div class="exercise-box">
+      <span class="info-label">🎯 Practice Exercise</span>
+      <h4>Challenge: Build an Instagram Comment Analyzer</h4>
+      <p>Modify the sentiment analyzer to analyze Instagram comments. Create a dataset of 20 sample comments (mix of positive and negative) and:</p>
+      <ul style="margin-top:0.5rem">
+        <li>Train the model on your custom comments</li>
+        <li>Test it on 5 new comments</li>
+        <li>Add a third category: "neutral" (label=2)</li>
+        <li>Print a summary: "X% positive, Y% negative, Z% neutral"</li>
+      </ul>
+      <p style="margin-top:0.75rem">This is exactly how brands monitor their social media sentiment in real-time!</p>
+    </div>
+
+    <div class="info-box">
+      <span class="info-label">Key Takeaway</span>
+      <p>NLP converts human language into numbers (tokens → embeddings), processes them through neural networks with attention mechanisms, and outputs predictions or generated text. You've built three real NLP applications — sentiment analysis, summarization, and question answering — using state-of-the-art pre-trained models. These same techniques power every chatbot, translation service, and recommendation engine you use daily.</p>
+    </div>
+
+  </div>
+
+  <div class="lesson-nav">
+    <a href="lesson-ai-6.html" class="nav-link">
+      <span class="nav-label">← Previous</span>
+      <span class="nav-title">Computer Vision — How AI Sees</span>
+    </a>
+    <a href="lesson-ai-8.html" class="nav-link next">
+      <span class="nav-label">Next Lesson →</span>
+      <span class="nav-title">Large Language Models (LLMs)</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Tech.talk_official</div>
+      <div class="footer-copy">© 2025 Tech Talk Official. Made with ❤️ in Maharashtra, India.</div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

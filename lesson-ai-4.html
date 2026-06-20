@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 4: Your First ML Model — Tech Talk Official</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810; --bg2: #0a0f1e; --bg3: #0f1630;
+  --accent: #00f5c4; --accent2: #7c5cfc; --accent3: #ff6b6b;
+  --text: #e8eaf6; --muted: #7b82a0;
+  --border: rgba(0,245,196,0.15); --card: rgba(15,22,48,0.8);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 20% 20%, rgba(124,92,252,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(0,245,196,0.06) 0%, transparent 50%);
+  animation: bgMove 20s ease infinite alternate; pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(0,245,196,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,245,196,0.03) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none; z-index: 0;
+}
+@keyframes bgMove { 0% { transform: translate(0,0); } 100% { transform: translate(3%,3%); } }
+.container { max-width: 820px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(5,8,16,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: 'Space Mono', monospace; font-size: 1.1rem; color: var(--accent); text-decoration: none; }
+.logo span { color: var(--text); }
+.back-btn { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: color 0.2s; }
+.back-btn:hover { color: var(--accent); }
+.lesson-header { padding: 7rem 0 2rem; }
+.breadcrumb { font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem; font-family: 'Space Mono', monospace; }
+.breadcrumb a { color: var(--accent); text-decoration: none; }
+.lesson-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,245,196,0.08); border: 1px solid rgba(0,245,196,0.2); padding: 0.35rem 0.9rem; border-radius: 100px; font-size: 0.72rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1rem; }
+.lesson-header h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 0.75rem; }
+.lesson-meta { display: flex; gap: 1.5rem; color: var(--muted); font-size: 0.85rem; }
+.lesson-body { padding: 1rem 0 3rem; font-size: 1rem; line-height: 1.9; }
+.lesson-body p { color: var(--text); margin-bottom: 1.2rem; }
+.lesson-body h2 { font-size: 1.4rem; font-weight: 800; color: var(--accent); margin: 2.5rem 0 1rem; letter-spacing: -0.5px; }
+.lesson-body h3 { font-size: 1.1rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
+.lesson-body strong { color: var(--accent2); }
+.lesson-body ul, .lesson-body ol { margin: 0 0 1.2rem 1.5rem; color: var(--text); }
+.lesson-body li { margin-bottom: 0.6rem; line-height: 1.7; }
+.lesson-body code { background: var(--bg3); padding: 2px 8px; border-radius: 5px; font-family: 'Space Mono', monospace; font-size: 0.85em; color: var(--accent); }
+.lesson-body pre { background: var(--bg3); border: 1px solid var(--border); padding: 1.25rem; border-radius: 10px; overflow-x: auto; margin: 1rem 0 1.5rem; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+.lesson-body pre code { background: none; padding: 0; color: var(--text); }
+.info-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.info-box .info-label { color: var(--accent); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+.info-box p:last-child { margin-bottom: 0; }
+.warning-box { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); border-left: 3px solid var(--accent3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.warning-box .info-label { color: var(--accent3); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+.success-box { background: rgba(0,245,196,0.06); border: 1px solid rgba(0,245,196,0.2); border-left: 3px solid var(--accent); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.success-box .info-label { color: var(--accent); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+.step-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1rem 0; display: flex; gap: 1rem; align-items: flex-start; }
+.step-num { background: var(--accent); color: var(--bg); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; flex-shrink: 0; margin-top: 2px; }
+.step-content h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+.step-content p { font-size: 0.88rem; color: var(--muted); margin: 0; }
+.exercise-box { background: rgba(124,92,252,0.06); border: 1px solid rgba(124,92,252,0.2); border-left: 3px solid var(--accent2); border-radius: 8px; padding: 1.5rem; margin: 2rem 0; }
+.exercise-box .info-label { color: var(--accent2); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; display: block; }
+.exercise-box h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+.exercise-box p, .exercise-box li { font-size: 0.9rem; color: var(--muted); }
+.lesson-nav { display: flex; justify-content: space-between; gap: 1rem; padding: 2rem 0 4rem; border-top: 1px solid var(--border); margin-top: 2rem; flex-wrap: wrap; }
+.nav-link { display: flex; flex-direction: column; gap: 4px; padding: 1rem 1.5rem; background: var(--card); border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); transition: all 0.2s; flex: 1; min-width: 200px; }
+.nav-link:hover { border-color: var(--accent); transform: translateY(-2px); }
+.nav-link.next { text-align: right; }
+.nav-link .nav-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+.nav-link .nav-title { font-size: 0.95rem; font-weight: 700; }
+footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 2rem 0; position: relative; z-index: 1; }
+.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-logo { font-family: 'Space Mono', monospace; font-size: 1rem; color: var(--accent); }
+.footer-copy { color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">Tech<span>.talk</span></a>
+    <a href="ai-ml-course.html" class="back-btn">← Back to Course</a>
+  </div>
+</nav>
+<header class="lesson-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="ai-ml-course.html">AI & ML Fundamentals</a> / Lesson 04</div>
+    <div class="lesson-tag">🤖 Lesson 04 of 12</div>
+    <h1>Your First ML Model</h1>
+    <div class="lesson-meta">
+      <span>⏱ 25 min read</span>
+      <span>💻 Hands-on Code</span>
+      <span>🎯 Beginner</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="lesson-body">
+
+    <p>This is the lesson where things get real. No more theory — we're going to actually build a machine learning model from scratch, run it, and see it make predictions. By the end of this lesson, you'll have written your first working ML code and understand exactly what each line does. Let's go. 🚀</p>
+
+    <div class="info-box">
+      <span class="info-label">What we're building</span>
+      <p>A model that predicts whether a student will pass or fail an exam, based on how many hours they studied. Simple concept, real ML — perfect for understanding the fundamentals.</p>
+    </div>
+
+    <h2>Step 1 — Setup (One Time Only)</h2>
+    <p>Before we write any ML code, we need to install the right tools. Open your terminal (Command Prompt on Windows, Terminal on Mac) and run these two commands:</p>
+
+    <pre><code>pip install scikit-learn numpy pandas matplotlib</code></pre>
+
+    <div class="info-box">
+      <span class="info-label">What are these?</span>
+      <p><strong>scikit-learn</strong> — the most popular ML library in Python. <strong>numpy</strong> — handles numbers and arrays efficiently. <strong>pandas</strong> — for working with data tables. <strong>matplotlib</strong> — for visualizing data with graphs.</p>
+    </div>
+
+    <h2>Step 2 — Create Your First Dataset</h2>
+    <p>Every ML model needs data to learn from. We'll create a simple dataset — hours studied vs exam result. Create a new file called <code>first_model.py</code> and start typing:</p>
+
+    <pre><code>import numpy as np
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
+
+# Our dataset — hours studied and whether student passed (1) or failed (0)
+hours_studied = [1, 2, 2, 3, 4, 4, 5, 6, 7, 8, 8, 9, 10, 10, 11]
+passed =        [0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1,  1,  1,  1]
+
+# Convert to numpy arrays (format scikit-learn needs)
+X = np.array(hours_studied).reshape(-1, 1)  # Input (features)
+y = np.array(passed)                         # Output (labels)</code></pre>
+
+    <div class="info-box">
+      <span class="info-label">What's happening here?</span>
+      <p><code>X</code> is our "input" — the hours studied. <code>y</code> is our "output" — whether the student passed. The <code>reshape(-1, 1)</code> just formats the data the way scikit-learn expects it.</p>
+    </div>
+
+    <h2>Step 3 — Split Data into Train & Test</h2>
+    <p>Here's a critical ML concept: you can't test your model on the same data you trained it on. That's like giving students the exam questions in advance — of course they'd get 100%. Instead, we split our data: 80% for training, 20% for testing.</p>
+
+    <pre><code># Split: 80% training data, 20% test data
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+print(f"Training samples: {len(X_train)}")
+print(f"Test samples: {len(X_test)}")</code></pre>
+
+    <h2>Step 4 — Train the Model</h2>
+    <p>This is the moment of truth. We create a Logistic Regression model and train it on our data. "Logistic Regression" sounds scary — but it's actually one of the simplest ML algorithms, perfect for "yes/no" predictions like pass/fail.</p>
+
+    <pre><code># Create the model
+model = LogisticRegression()
+
+# Train it! The model learns the pattern between hours studied and passing
+model.fit(X_train, y_train)
+
+print("✅ Model trained successfully!")</code></pre>
+
+    <div class="success-box">
+      <span class="info-label">What just happened?</span>
+      <p>In that one line — <code>model.fit(X_train, y_train)</code> — the algorithm analyzed your training data, found the mathematical relationship between hours studied and passing, and stored that relationship inside the model object. That's machine learning happening, right there.</p>
+    </div>
+
+    <h2>Step 5 — Test & Evaluate</h2>
+    <p>Now we ask the model to predict results on data it has <em>never seen before</em> — our test set. Then we compare its predictions to the real answers.</p>
+
+    <pre><code># Make predictions on test data
+predictions = model.predict(X_test)
+
+# Check accuracy
+accuracy = accuracy_score(y_test, predictions)
+print(f"Model Accuracy: {accuracy * 100:.1f}%")
+
+# See what the model predicts
+print("\nPredictions vs Reality:")
+for i in range(len(X_test)):
+    result = "PASS ✅" if predictions[i] == 1 else "FAIL ❌"
+    actual = "PASS ✅" if y_test[i] == 1 else "FAIL ❌"
+    print(f"  {X_test[i][0]} hours → Predicted: {result} | Actual: {actual}")</code></pre>
+
+    <h2>Step 6 — Make a Real Prediction</h2>
+    <p>Now the fun part — ask the model: "If a student studies for 6 hours, will they pass?"</p>
+
+    <pre><code># Predict for new students
+def predict_student(hours):
+    prediction = model.predict([[hours]])
+    probability = model.predict_proba([[hours]])[0]
+    result = "PASS ✅" if prediction[0] == 1 else "FAIL ❌"
+    confidence = max(probability) * 100
+    print(f"Student studied {hours} hours → {result} (Confidence: {confidence:.1f}%)")
+
+# Try different study hours
+predict_student(3)
+predict_student(6)
+predict_student(9)</code></pre>
+
+    <h2>Step 7 — Visualize It</h2>
+    <p>Add this at the end to see your model's decision boundary on a graph:</p>
+
+    <pre><code># Visualize the data and model
+plt.figure(figsize=(10, 6))
+plt.scatter(hours_studied, passed, color='cyan', s=100, zorder=5, label='Actual Data')
+
+# Plot model prediction line
+x_range = np.linspace(0, 12, 100).reshape(-1, 1)
+y_prob = model.predict_proba(x_range)[:, 1]
+plt.plot(x_range, y_prob, color='purple', linewidth=2, label='Pass Probability')
+
+plt.axhline(y=0.5, color='red', linestyle='--', alpha=0.5, label='Decision Boundary (50%)')
+plt.xlabel('Hours Studied')
+plt.ylabel('Probability of Passing')
+plt.title('Your First ML Model — Student Pass Predictor')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()</code></pre>
+
+    <div class="success-box">
+      <span class="info-label">Run the complete file</span>
+      <p>Save <code>first_model.py</code> and run it with <code>python first_model.py</code> in your terminal. You'll see accuracy scores, predictions, and a graph showing exactly where your model draws the line between "pass" and "fail."</p>
+    </div>
+
+    <h2>What You Just Built — And Why It Matters</h2>
+    <p>Let's zoom out. You just:</p>
+    <ol>
+      <li>Created a dataset representing a real-world problem</li>
+      <li>Split it into training and test sets (a fundamental ML practice)</li>
+      <li>Trained a classification model using scikit-learn</li>
+      <li>Evaluated it on unseen data</li>
+      <li>Used it to make new predictions with confidence scores</li>
+      <li>Visualized the model's behavior</li>
+    </ol>
+    <p>This exact workflow — <strong>collect → split → train → evaluate → predict</strong> — is the same workflow used by ML engineers at Google, Netflix, and every major tech company. You just followed it. The models get more complex; the workflow stays the same.</p>
+
+    <div class="warning-box">
+      <span class="info-label">Common mistake to avoid</span>
+      <p>Don't worry if your accuracy isn't 100% — that's normal and actually healthy. A model with 100% accuracy on test data is usually <em>overfitting</em> (memorizing the training data rather than learning patterns). Real-world models aim for the best accuracy they can get without overfitting.</p>
+    </div>
+
+    <div class="exercise-box">
+      <span class="info-label">🎯 Practice Exercise</span>
+      <h4>Challenge: Build a House Price Predictor</h4>
+      <p>Using the same workflow, build a model that predicts house prices based on size (in sq. ft.). Here's your starting dataset:</p>
+      <pre><code>sizes =  [500, 750, 1000, 1200, 1500, 1800, 2000, 2500, 3000]
+prices = [25,  38,  50,   60,   75,   90,   100,  125,  150]  # in lakhs</code></pre>
+      <p style="margin-top:0.75rem">Hint: use <code>LinearRegression</code> instead of <code>LogisticRegression</code> (since price is a number, not a category). Try predicting the price of a 1600 sq. ft. house!</p>
+    </div>
+
+    <div class="info-box">
+      <span class="info-label">Key Takeaway</span>
+      <p>Machine learning isn't magic — it's a workflow: collect data, split it, train a model, evaluate it, use it. You just completed that entire workflow for the first time. Every ML project you'll ever work on follows this same pattern. The algorithms change; the mindset stays the same.</p>
+    </div>
+
+  </div>
+
+  <div class="lesson-nav">
+    <a href="lesson-ai-3.html" class="nav-link">
+      <span class="nav-label">← Previous</span>
+      <span class="nav-title">Data is the New Oil</span>
+    </a>
+    <a href="lesson-ai-5.html" class="nav-link next">
+      <span class="nav-label">Next Lesson →</span>
+      <span class="nav-title">Neural Networks Explained Visually</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Tech.talk_official</div>
+      <div class="footer-copy">© 2025 Tech Talk Official. Made with ❤️ in Maharashtra, India.</div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

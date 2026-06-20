@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 6: Computer Vision — How AI Sees — Tech Talk Official</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810; --bg2: #0a0f1e; --bg3: #0f1630;
+  --accent: #00f5c4; --accent2: #7c5cfc; --accent3: #ff6b6b;
+  --text: #e8eaf6; --muted: #7b82a0;
+  --border: rgba(0,245,196,0.15); --card: rgba(15,22,48,0.8);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 20% 20%, rgba(124,92,252,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(0,245,196,0.06) 0%, transparent 50%);
+  animation: bgMove 20s ease infinite alternate; pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(0,245,196,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,245,196,0.03) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none; z-index: 0;
+}
+@keyframes bgMove { 0% { transform: translate(0,0); } 100% { transform: translate(3%,3%); } }
+.container { max-width: 820px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(5,8,16,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: 'Space Mono', monospace; font-size: 1.1rem; color: var(--accent); text-decoration: none; }
+.logo span { color: var(--text); }
+.back-btn { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: color 0.2s; }
+.back-btn:hover { color: var(--accent); }
+.lesson-header { padding: 7rem 0 2rem; }
+.breadcrumb { font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem; font-family: 'Space Mono', monospace; }
+.breadcrumb a { color: var(--accent); text-decoration: none; }
+.lesson-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,245,196,0.08); border: 1px solid rgba(0,245,196,0.2); padding: 0.35rem 0.9rem; border-radius: 100px; font-size: 0.72rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1rem; }
+.lesson-header h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 0.75rem; }
+.lesson-meta { display: flex; gap: 1.5rem; color: var(--muted); font-size: 0.85rem; flex-wrap: wrap; }
+.lesson-body { padding: 1rem 0 3rem; font-size: 1rem; line-height: 1.9; }
+.lesson-body p { color: var(--text); margin-bottom: 1.2rem; }
+.lesson-body h2 { font-size: 1.4rem; font-weight: 800; color: var(--accent); margin: 2.5rem 0 1rem; letter-spacing: -0.5px; }
+.lesson-body h3 { font-size: 1.1rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
+.lesson-body strong { color: var(--accent2); }
+.lesson-body ul, .lesson-body ol { margin: 0 0 1.2rem 1.5rem; color: var(--text); }
+.lesson-body li { margin-bottom: 0.6rem; line-height: 1.7; }
+.lesson-body code { background: var(--bg3); padding: 2px 8px; border-radius: 5px; font-family: 'Space Mono', monospace; font-size: 0.85em; color: var(--accent); }
+.lesson-body pre { background: var(--bg3); border: 1px solid var(--border); padding: 1.25rem; border-radius: 10px; overflow-x: auto; margin: 1rem 0 1.5rem; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+.lesson-body pre code { background: none; padding: 0; color: var(--text); }
+.info-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.info-box .info-label { color: var(--accent); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+.info-box p:last-child { margin-bottom: 0; }
+.warning-box { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); border-left: 3px solid var(--accent3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.warning-box .info-label { color: var(--accent3); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+.success-box { background: rgba(0,245,196,0.06); border: 1px solid rgba(0,245,196,0.2); border-left: 3px solid var(--accent); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.success-box .info-label { color: var(--accent); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+.exercise-box { background: rgba(124,92,252,0.06); border: 1px solid rgba(124,92,252,0.2); border-left: 3px solid var(--accent2); border-radius: 8px; padding: 1.5rem; margin: 2rem 0; }
+.exercise-box .info-label { color: var(--accent2); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; display: block; }
+.exercise-box h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+.exercise-box p, .exercise-box li { font-size: 0.9rem; color: var(--muted); }
+.lesson-nav { display: flex; justify-content: space-between; gap: 1rem; padding: 2rem 0 4rem; border-top: 1px solid var(--border); margin-top: 2rem; flex-wrap: wrap; }
+.nav-link { display: flex; flex-direction: column; gap: 4px; padding: 1rem 1.5rem; background: var(--card); border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); transition: all 0.2s; flex: 1; min-width: 200px; }
+.nav-link:hover { border-color: var(--accent); transform: translateY(-2px); }
+.nav-link.next { text-align: right; }
+.nav-link .nav-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+.nav-link .nav-title { font-size: 0.95rem; font-weight: 700; }
+footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 2rem 0; position: relative; z-index: 1; }
+.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-logo { font-family: 'Space Mono', monospace; font-size: 1rem; color: var(--accent); }
+.footer-copy { color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">Tech<span>.talk</span></a>
+    <a href="ai-ml-course.html" class="back-btn">← Back to Course</a>
+  </div>
+</nav>
+<header class="lesson-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="ai-ml-course.html">AI & ML Fundamentals</a> / Lesson 06</div>
+    <div class="lesson-tag">🤖 Lesson 06 of 12</div>
+    <h1>Computer Vision — How AI Sees</h1>
+    <div class="lesson-meta">
+      <span>⏱ 20 min read</span>
+      <span>💻 Hands-on Code</span>
+      <span>🎯 Beginner</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="lesson-body">
+
+    <p>Every time you unlock your phone with your face, search Google Images, or watch a self-driving car navigate traffic — that's Computer Vision at work. It's the branch of AI that gives machines the ability to "see" and understand images and video. In this lesson, we'll understand exactly how it works, and build a real image classifier that can distinguish between different objects — using code you can run right now.</p>
+
+    <h2>How Do Computers "See"?</h2>
+    <p>Here's the fundamental question: what does a computer actually see when you show it a photo? The answer is surprisingly simple — <strong>numbers</strong>. Every image is just a grid of pixels, and every pixel is a number (or three numbers for color — Red, Green, Blue values from 0-255).</p>
+
+    <p>A 100×100 color photo = 100 × 100 × 3 = <strong>30,000 numbers</strong>. That's the raw input an AI receives. From those 30,000 numbers, it must figure out whether the image contains a cat, a car, a human face, or a tumor on an X-ray.</p>
+
+    <div class="info-box">
+      <span class="info-label">The pixel grid</span>
+      <p>A grayscale pixel = 1 number (0=black, 255=white). A color pixel = 3 numbers (Red, Green, Blue). A standard Instagram photo at 1080×1080 pixels = 1080 × 1080 × 3 = <strong>3,499,200 numbers</strong> that the AI processes to understand what's in the image.</p>
+    </div>
+
+    <h2>CNNs — The Architecture That Changed Everything</h2>
+    <p>In Lesson 5, we built a basic neural network. For images, there's a special type of neural network that works dramatically better: the <strong>Convolutional Neural Network (CNN)</strong>. CNNs were the breakthrough that made modern computer vision possible.</p>
+
+    <p>Instead of connecting every pixel to every neuron (which would be computationally insane for large images), CNNs use a smarter approach — they scan the image with small filters, looking for specific patterns in local regions.</p>
+
+    <h3>How CNN Layers Work:</h3>
+    <ul>
+      <li><strong>Convolutional layers</strong> — Scan the image with small filters (e.g., 3×3 pixels) looking for edges, curves, textures</li>
+      <li><strong>Pooling layers</strong> — Compress the detected features, making the network more efficient and robust to small shifts</li>
+      <li><strong>Fully connected layers</strong> — Take the detected features and combine them into a final prediction</li>
+    </ul>
+
+    <div class="info-box">
+      <span class="info-label">How CNNs learn to see</span>
+      <p>Early convolutional layers detect simple features: horizontal edges, vertical edges, corners, color gradients. Middle layers combine these into shapes: circles, rectangles, curves. Deep layers recognize complex objects: eyes, wheels, faces. This hierarchical feature detection — from pixels to objects — is why CNNs work so well for visual tasks.</p>
+    </div>
+
+    <h2>Real-World Applications of Computer Vision</h2>
+    <ul>
+      <li><strong>Face unlock</strong> — Your phone's camera maps 30,000+ points on your face</li>
+      <li><strong>Medical imaging</strong> — AI detects tumors in X-rays and MRIs with radiologist-level accuracy</li>
+      <li><strong>Self-driving cars</strong> — Real-time detection of pedestrians, signs, lane markings, other vehicles</li>
+      <li><strong>Quality control</strong> — Factories use CV to detect defects on assembly lines at speeds humans can't match</li>
+      <li><strong>Instagram filters</strong> — Real-time face detection and segmentation to apply effects</li>
+      <li><strong>Google Lens</strong> — Point your camera at anything and get instant information</li>
+    </ul>
+
+    <h2>Build an Image Classifier — Step by Step</h2>
+    <p>Let's build a CNN that classifies images into 10 categories (airplane, car, bird, cat, deer, dog, frog, horse, ship, truck) using the CIFAR-10 dataset — 60,000 real color images.</p>
+
+    <pre><code># Install: pip install tensorflow matplotlib numpy
+import tensorflow as tf
+from tensorflow import keras
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Class names for CIFAR-10
+class_names = ['Airplane', 'Car', 'Bird', 'Cat', 'Deer',
+               'Dog', 'Frog', 'Horse', 'Ship', 'Truck']
+
+# Load dataset (downloads automatically ~170MB)
+(X_train, y_train), (X_test, y_test) = keras.datasets.cifar10.load_data()
+
+# Normalize pixel values to 0-1
+X_train = X_train / 255.0
+X_test = X_test / 255.0
+
+print(f"Training images: {X_train.shape}")  # (50000, 32, 32, 3)
+print(f"Test images: {X_test.shape}")        # (10000, 32, 32, 3)
+
+# Preview some images
+plt.figure(figsize=(12, 4))
+for i in range(12):
+    plt.subplot(2, 6, i+1)
+    plt.imshow(X_train[i])
+    plt.title(class_names[y_train[i][0]], fontsize=8)
+    plt.axis('off')
+plt.suptitle('Sample CIFAR-10 Images', fontsize=12)
+plt.tight_layout()
+plt.show()</code></pre>
+
+    <pre><code># Build the CNN
+model = keras.Sequential([
+    # First Convolutional Block
+    keras.layers.Conv2D(32, (3,3), activation='relu', padding='same',
+                        input_shape=(32, 32, 3)),
+    keras.layers.Conv2D(32, (3,3), activation='relu', padding='same'),
+    keras.layers.MaxPooling2D(2, 2),
+    keras.layers.Dropout(0.25),
+
+    # Second Convolutional Block
+    keras.layers.Conv2D(64, (3,3), activation='relu', padding='same'),
+    keras.layers.Conv2D(64, (3,3), activation='relu', padding='same'),
+    keras.layers.MaxPooling2D(2, 2),
+    keras.layers.Dropout(0.25),
+
+    # Classifier
+    keras.layers.Flatten(),
+    keras.layers.Dense(512, activation='relu'),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(10, activation='softmax')  # 10 categories
+])
+
+model.compile(
+    optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+model.summary()</code></pre>
+
+    <pre><code># Train the model
+history = model.fit(
+    X_train, y_train,
+    epochs=10,
+    batch_size=64,
+    validation_split=0.1,
+    verbose=1
+)
+
+# Evaluate
+test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
+print(f"\n✅ Test Accuracy: {test_accuracy * 100:.2f}%")</code></pre>
+
+    <pre><code># Make predictions and visualize
+predictions = model.predict(X_test[:12])
+
+plt.figure(figsize=(12, 6))
+for i in range(12):
+    plt.subplot(2, 6, i+1)
+    plt.imshow(X_test[i])
+    predicted = class_names[np.argmax(predictions[i])]
+    actual = class_names[y_test[i][0]]
+    confidence = np.max(predictions[i]) * 100
+    color = 'green' if predicted == actual else 'red'
+    plt.title(f"P: {predicted}\nA: {actual}\n{confidence:.0f}%",
+              fontsize=7, color=color)
+    plt.axis('off')
+plt.suptitle('CNN Predictions (Green=Correct, Red=Wrong)', fontsize=11)
+plt.tight_layout()
+plt.show()</code></pre>
+
+    <div class="success-box">
+      <span class="info-label">What to expect</span>
+      <p>After 10 epochs, your CNN should achieve roughly 75-80% accuracy on CIFAR-10. That means it correctly identifies the object in 3 out of every 4 images — using nothing but pixels and learned weights. State-of-the-art models achieve 99%+ on this dataset.</p>
+    </div>
+
+    <h2>Transfer Learning — The Real-World Shortcut</h2>
+    <p>In real projects, nobody trains CNNs from scratch (it takes days on expensive GPUs). Instead, they use <strong>transfer learning</strong> — taking a model already trained on millions of images and fine-tuning it for your specific task. This is how you build production-quality image classifiers in hours, not days.</p>
+
+    <pre><code># Transfer Learning with MobileNetV2 (pre-trained on ImageNet)
+base_model = keras.applications.MobileNetV2(
+    input_shape=(224, 224, 3),
+    include_top=False,  # Remove the original classifier
+    weights='imagenet'  # Use pre-trained weights
+)
+base_model.trainable = False  # Freeze pre-trained layers
+
+# Add your own classifier on top
+model_tl = keras.Sequential([
+    base_model,
+    keras.layers.GlobalAveragePooling2D(),
+    keras.layers.Dense(128, activation='relu'),
+    keras.layers.Dense(10, activation='softmax')
+])
+
+print("Transfer learning model built! Fine-tune on your own data.")</code></pre>
+
+    <div class="exercise-box">
+      <span class="info-label">🎯 Practice Exercise</span>
+      <h4>Challenge: Classify Your Own Images</h4>
+      <p>After training your CIFAR-10 model, try classifying your own photos:</p>
+      <pre><code>from PIL import Image
+import numpy as np
+
+# Load and preprocess your own image
+img = Image.open('your_image.jpg').resize((32, 32))
+img_array = np.array(img) / 255.0
+img_array = img_array.reshape(1, 32, 32, 3)
+
+# Predict
+pred = model.predict(img_array)
+predicted_class = class_names[np.argmax(pred)]
+confidence = np.max(pred) * 100
+print(f"Prediction: {predicted_class} ({confidence:.1f}% confident)")</code></pre>
+      <p style="margin-top:0.75rem">Try photos of cars, planes, or cats — see how well your trained model generalizes to real photos!</p>
+    </div>
+
+    <div class="info-box">
+      <span class="info-label">Key Takeaway</span>
+      <p>Computers see images as grids of numbers. CNNs learn to detect patterns in those numbers — from edges to shapes to objects — through hierarchical feature learning. You've built a real CNN that classifies 10 types of objects with 75-80% accuracy. In production, transfer learning lets you achieve even higher accuracy in a fraction of the training time.</p>
+    </div>
+
+  </div>
+
+  <div class="lesson-nav">
+    <a href="lesson-ai-5.html" class="nav-link">
+      <span class="nav-label">← Previous</span>
+      <span class="nav-title">Neural Networks Explained Visually</span>
+    </a>
+    <a href="lesson-ai-7.html" class="nav-link next">
+      <span class="nav-label">Next Lesson →</span>
+      <span class="nav-title">Natural Language Processing</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Tech.talk_official</div>
+      <div class="footer-copy">© 2025 Tech Talk Official. Made with ❤️ in Maharashtra, India.</div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

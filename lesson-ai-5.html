@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 5: Neural Networks Explained Visually — Tech Talk Official</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810; --bg2: #0a0f1e; --bg3: #0f1630;
+  --accent: #00f5c4; --accent2: #7c5cfc; --accent3: #ff6b6b;
+  --text: #e8eaf6; --muted: #7b82a0;
+  --border: rgba(0,245,196,0.15); --card: rgba(15,22,48,0.8);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 20% 20%, rgba(124,92,252,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(0,245,196,0.06) 0%, transparent 50%);
+  animation: bgMove 20s ease infinite alternate; pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(0,245,196,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,245,196,0.03) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none; z-index: 0;
+}
+@keyframes bgMove { 0% { transform: translate(0,0); } 100% { transform: translate(3%,3%); } }
+.container { max-width: 820px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(5,8,16,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 0; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: 'Space Mono', monospace; font-size: 1.1rem; color: var(--accent); text-decoration: none; }
+.logo span { color: var(--text); }
+.back-btn { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: color 0.2s; }
+.back-btn:hover { color: var(--accent); }
+.lesson-header { padding: 7rem 0 2rem; }
+.breadcrumb { font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem; font-family: 'Space Mono', monospace; }
+.breadcrumb a { color: var(--accent); text-decoration: none; }
+.lesson-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,245,196,0.08); border: 1px solid rgba(0,245,196,0.2); padding: 0.35rem 0.9rem; border-radius: 100px; font-size: 0.72rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1rem; }
+.lesson-header h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 0.75rem; }
+.lesson-meta { display: flex; gap: 1.5rem; color: var(--muted); font-size: 0.85rem; flex-wrap: wrap; }
+.lesson-body { padding: 1rem 0 3rem; font-size: 1rem; line-height: 1.9; }
+.lesson-body p { color: var(--text); margin-bottom: 1.2rem; }
+.lesson-body h2 { font-size: 1.4rem; font-weight: 800; color: var(--accent); margin: 2.5rem 0 1rem; letter-spacing: -0.5px; }
+.lesson-body h3 { font-size: 1.1rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
+.lesson-body strong { color: var(--accent2); }
+.lesson-body ul, .lesson-body ol { margin: 0 0 1.2rem 1.5rem; color: var(--text); }
+.lesson-body li { margin-bottom: 0.6rem; line-height: 1.7; }
+.lesson-body code { background: var(--bg3); padding: 2px 8px; border-radius: 5px; font-family: 'Space Mono', monospace; font-size: 0.85em; color: var(--accent); }
+.lesson-body pre { background: var(--bg3); border: 1px solid var(--border); padding: 1.25rem; border-radius: 10px; overflow-x: auto; margin: 1rem 0 1.5rem; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.6; }
+.lesson-body pre code { background: none; padding: 0; color: var(--text); }
+.info-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.info-box .info-label { color: var(--accent); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+.info-box p:last-child { margin-bottom: 0; }
+.warning-box { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); border-left: 3px solid var(--accent3); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.warning-box .info-label { color: var(--accent3); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+.success-box { background: rgba(0,245,196,0.06); border: 1px solid rgba(0,245,196,0.2); border-left: 3px solid var(--accent); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.success-box .info-label { color: var(--accent); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; }
+.exercise-box { background: rgba(124,92,252,0.06); border: 1px solid rgba(124,92,252,0.2); border-left: 3px solid var(--accent2); border-radius: 8px; padding: 1.5rem; margin: 2rem 0; }
+.exercise-box .info-label { color: var(--accent2); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; display: block; }
+.exercise-box h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+.exercise-box p, .exercise-box li { font-size: 0.9rem; color: var(--muted); }
+
+/* Neural Network Visual */
+.nn-visual { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin: 2rem 0; overflow-x: auto; }
+.nn-visual svg { display: block; margin: 0 auto; }
+
+.lesson-nav { display: flex; justify-content: space-between; gap: 1rem; padding: 2rem 0 4rem; border-top: 1px solid var(--border); margin-top: 2rem; flex-wrap: wrap; }
+.nav-link { display: flex; flex-direction: column; gap: 4px; padding: 1rem 1.5rem; background: var(--card); border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); transition: all 0.2s; flex: 1; min-width: 200px; }
+.nav-link:hover { border-color: var(--accent); transform: translateY(-2px); }
+.nav-link.next { text-align: right; }
+.nav-link .nav-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+.nav-link .nav-title { font-size: 0.95rem; font-weight: 700; }
+footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 2rem 0; position: relative; z-index: 1; }
+.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-logo { font-family: 'Space Mono', monospace; font-size: 1rem; color: var(--accent); }
+.footer-copy { color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">Tech<span>.talk</span></a>
+    <a href="ai-ml-course.html" class="back-btn">← Back to Course</a>
+  </div>
+</nav>
+<header class="lesson-header">
+  <div class="container">
+    <div class="breadcrumb"><a href="ai-ml-course.html">AI & ML Fundamentals</a> / Lesson 05</div>
+    <div class="lesson-tag">🤖 Lesson 05 of 12</div>
+    <h1>Neural Networks Explained Visually</h1>
+    <div class="lesson-meta">
+      <span>⏱ 22 min read</span>
+      <span>🎨 Visual + Code</span>
+      <span>🎯 Beginner</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="lesson-body">
+
+    <p>Neural networks are the engine behind almost every impressive AI you've seen — image recognition, voice assistants, ChatGPT, self-driving cars. The name sounds intimidating, but the core idea is surprisingly simple. In this lesson, we'll build your mental model of how neural networks work from the ground up — visually first, then with actual code. No PhD required.</p>
+
+    <h2>The Brain Analogy (And Why It's Both Useful and Misleading)</h2>
+    <p>Neural networks were <em>loosely</em> inspired by how biological brains work. Your brain has roughly 86 billion neurons. Each neuron connects to thousands of others. When you see something, hear something, or think something, electrical signals travel through these connections — some getting stronger, others weaker — and that's how you learn and remember.</p>
+
+    <p>Artificial neural networks borrow this idea: they have artificial "neurons" (called nodes) connected to each other, and the <strong>strength of each connection (called a "weight")</strong> is what the network learns during training. But that's where the analogy ends — artificial neural networks don't "think" or "feel." They do math. Very, very fast math.</p>
+
+    <div class="info-box">
+      <span class="info-label">Key insight</span>
+      <p>A neural network is essentially a very complex mathematical function. You give it an input (like an image), it runs that input through thousands or millions of tiny calculations, and out comes a prediction (like "this is a cat"). Training the network means adjusting all those calculations until the predictions are accurate.</p>
+    </div>
+
+    <h2>The Structure — Layers</h2>
+    <p>Every neural network is organized into <strong>layers</strong>. Think of it like an assembly line in a factory — each layer does a specific job, and passes its result to the next layer.</p>
+
+    <div class="nn-visual">
+      <svg viewBox="0 0 600 280" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <!-- Connections -->
+        <g stroke="#00f5c4" stroke-width="0.8" opacity="0.2">
+          <line x1="100" y1="70" x2="250" y2="70"/><line x1="100" y1="70" x2="250" y2="140"/>
+          <line x1="100" y1="70" x2="250" y2="210"/><line x1="100" y1="140" x2="250" y2="70"/>
+          <line x1="100" y1="140" x2="250" y2="140"/><line x1="100" y1="140" x2="250" y2="210"/>
+          <line x1="100" y1="210" x2="250" y2="70"/><line x1="100" y1="210" x2="250" y2="140"/>
+          <line x1="100" y1="210" x2="250" y2="210"/>
+          <line x1="250" y1="70" x2="400" y2="70"/><line x1="250" y1="70" x2="400" y2="140"/>
+          <line x1="250" y1="70" x2="400" y2="210"/><line x1="250" y1="140" x2="400" y2="70"/>
+          <line x1="250" y1="140" x2="400" y2="140"/><line x1="250" y1="140" x2="400" y2="210"/>
+          <line x1="250" y1="210" x2="400" y2="70"/><line x1="250" y1="210" x2="400" y2="140"/>
+          <line x1="250" y1="210" x2="400" y2="210"/>
+          <line x1="400" y1="70" x2="520" y2="105"/><line x1="400" y1="140" x2="520" y2="105"/>
+          <line x1="400" y1="210" x2="520" y2="105"/><line x1="400" y1="70" x2="520" y2="175"/>
+          <line x1="400" y1="140" x2="520" y2="175"/><line x1="400" y1="210" x2="520" y2="175"/>
+        </g>
+        <!-- Input Layer -->
+        <circle cx="100" cy="70" r="22" fill="#0f1630" stroke="#00f5c4" stroke-width="2"/>
+        <text x="100" y="75" text-anchor="middle" fill="#00f5c4" font-size="10" font-family="Space Mono">x1</text>
+        <circle cx="100" cy="140" r="22" fill="#0f1630" stroke="#00f5c4" stroke-width="2"/>
+        <text x="100" y="145" text-anchor="middle" fill="#00f5c4" font-size="10" font-family="Space Mono">x2</text>
+        <circle cx="100" cy="210" r="22" fill="#0f1630" stroke="#00f5c4" stroke-width="2"/>
+        <text x="100" y="215" text-anchor="middle" fill="#00f5c4" font-size="10" font-family="Space Mono">x3</text>
+        <!-- Hidden Layer 1 -->
+        <circle cx="250" cy="70" r="22" fill="#0f1630" stroke="#7c5cfc" stroke-width="2"/>
+        <circle cx="250" cy="140" r="22" fill="#0f1630" stroke="#7c5cfc" stroke-width="2"/>
+        <circle cx="250" cy="210" r="22" fill="#0f1630" stroke="#7c5cfc" stroke-width="2"/>
+        <!-- Hidden Layer 2 -->
+        <circle cx="400" cy="70" r="22" fill="#0f1630" stroke="#7c5cfc" stroke-width="2"/>
+        <circle cx="400" cy="140" r="22" fill="#0f1630" stroke="#7c5cfc" stroke-width="2"/>
+        <circle cx="400" cy="210" r="22" fill="#0f1630" stroke="#7c5cfc" stroke-width="2"/>
+        <!-- Output Layer -->
+        <circle cx="520" cy="105" r="22" fill="#0f1630" stroke="#ff6b6b" stroke-width="2"/>
+        <text x="520" y="101" text-anchor="middle" fill="#ff6b6b" font-size="8" font-family="Space Mono">Cat</text>
+        <text x="520" y="113" text-anchor="middle" fill="#ff6b6b" font-size="8" font-family="Space Mono">92%</text>
+        <circle cx="520" cy="175" r="22" fill="#0f1630" stroke="#ff6b6b" stroke-width="2"/>
+        <text x="520" y="171" text-anchor="middle" fill="#ff6b6b" font-size="8" font-family="Space Mono">Dog</text>
+        <text x="520" y="183" text-anchor="middle" fill="#ff6b6b" font-size="8" font-family="Space Mono">8%</text>
+        <!-- Labels -->
+        <text x="100" y="250" text-anchor="middle" fill="#7b82a0" font-size="11" font-family="Outfit">Input</text>
+        <text x="100" y="263" text-anchor="middle" fill="#7b82a0" font-size="11" font-family="Outfit">Layer</text>
+        <text x="250" y="250" text-anchor="middle" fill="#7b82a0" font-size="11" font-family="Outfit">Hidden</text>
+        <text x="250" y="263" text-anchor="middle" fill="#7b82a0" font-size="11" font-family="Outfit">Layer 1</text>
+        <text x="400" y="250" text-anchor="middle" fill="#7b82a0" font-size="11" font-family="Outfit">Hidden</text>
+        <text x="400" y="263" text-anchor="middle" fill="#7b82a0" font-size="11" font-family="Outfit">Layer 2</text>
+        <text x="520" y="215" text-anchor="middle" fill="#7b82a0" font-size="11" font-family="Outfit">Output</text>
+        <text x="520" y="228" text-anchor="middle" fill="#7b82a0" font-size="11" font-family="Outfit">Layer</text>
+      </svg>
+    </div>
+
+    <h3>1. Input Layer</h3>
+    <p>This is where your data enters the network. If you're recognizing a 28×28 pixel image (like a handwritten digit), the input layer has 784 nodes — one for each pixel. Each node holds the value of that pixel (0 = black, 255 = white).</p>
+
+    <h3>2. Hidden Layers</h3>
+    <p>These are the layers in between — and this is where the real "learning" happens. Early hidden layers detect simple patterns (edges, curves). Later layers combine those simple patterns into complex ones (shapes, faces, objects). The word "deep" in "Deep Learning" simply means the network has many hidden layers.</p>
+
+    <h3>3. Output Layer</h3>
+    <p>The final layer gives you the prediction. For image classification, each node represents a category — "cat," "dog," "car" — and outputs a probability. The category with the highest probability wins.</p>
+
+    <h2>How a Neuron Actually Works</h2>
+    <p>Each neuron does three simple things:</p>
+    <ol>
+      <li><strong>Receives inputs</strong> from all neurons in the previous layer</li>
+      <li><strong>Multiplies each input by a weight</strong> (how important is this input?) and adds them up</li>
+      <li><strong>Applies an "activation function"</strong> — a mathematical gate that decides whether this neuron should "fire" (pass its signal forward) or stay quiet</li>
+    </ol>
+
+    <div class="info-box">
+      <span class="info-label">The weights are everything</span>
+      <p>Training a neural network means finding the right weights for every connection. A network with millions of parameters (weights) needs to find the right combination out of an almost infinite number of possibilities. It does this through a process called <strong>backpropagation</strong> — making small adjustments to weights based on how wrong its predictions were, millions of times over.</p>
+    </div>
+
+    <h2>Build a Neural Network in Python</h2>
+    <p>Let's build one. We'll use <code>tensorflow</code> and <code>keras</code> — the most popular deep learning libraries — to build a network that recognizes handwritten digits (the classic "Hello World" of deep learning).</p>
+
+    <pre><code># Install first: pip install tensorflow
+import tensorflow as tf
+from tensorflow import keras
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load the MNIST dataset (70,000 handwritten digit images — built into keras!)
+(X_train, y_train), (X_test, y_test) = keras.datasets.mnist.load_data()
+
+# Normalize pixel values from 0-255 to 0-1 (helps training)
+X_train = X_train / 255.0
+X_test = X_test / 255.0
+
+print(f"Training images: {X_train.shape}")  # (60000, 28, 28)
+print(f"Test images: {X_test.shape}")        # (10000, 28, 28)
+
+# Let's see what the data looks like
+plt.figure(figsize=(10, 4))
+for i in range(10):
+    plt.subplot(2, 5, i+1)
+    plt.imshow(X_train[i], cmap='gray')
+    plt.title(f"Label: {y_train[i]}")
+    plt.axis('off')
+plt.tight_layout()
+plt.show()</code></pre>
+
+    <pre><code># Build the neural network
+model = keras.Sequential([
+    keras.layers.Flatten(input_shape=(28, 28)),  # 784 input nodes
+    keras.layers.Dense(128, activation='relu'),   # Hidden layer: 128 neurons
+    keras.layers.Dense(64, activation='relu'),    # Hidden layer: 64 neurons
+    keras.layers.Dense(10, activation='softmax') # Output: 10 classes (0-9)
+])
+
+# Compile — choose optimizer and loss function
+model.compile(
+    optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# Summary — see what you built
+model.summary()</code></pre>
+
+    <pre><code># Train the model
+history = model.fit(
+    X_train, y_train,
+    epochs=5,           # Train for 5 rounds
+    validation_split=0.1,  # Use 10% of training data for validation
+    verbose=1
+)
+
+# Evaluate on test data
+test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=0)
+print(f"\n✅ Test Accuracy: {test_accuracy * 100:.2f}%")</code></pre>
+
+    <pre><code># Make predictions on new images
+predictions = model.predict(X_test[:5])
+
+for i in range(5):
+    predicted = np.argmax(predictions[i])
+    actual = y_test[i]
+    confidence = predictions[i][predicted] * 100
+    print(f"Image {i+1}: Predicted={predicted}, Actual={actual}, Confidence={confidence:.1f}%")</code></pre>
+
+    <div class="success-box">
+      <span class="info-label">Expected output</span>
+      <p>After training, you should see accuracy climbing from ~91% to ~98% over 5 epochs. Your network — which started knowing nothing — will have learned to recognize handwritten digits with human-level accuracy. That's deep learning in action.</p>
+    </div>
+
+    <h2>Why "Deep" Learning Works So Well</h2>
+    <p>The key insight of deep learning is <strong>hierarchical feature learning</strong>. Rather than hand-engineering features (like we discussed in Lesson 3), deep networks learn features automatically — from raw pixels to edges to shapes to objects — just by seeing enough examples and adjusting weights through backpropagation. This is why deep learning revolutionized computer vision, speech recognition, and natural language processing all at once.</p>
+
+    <div class="exercise-box">
+      <span class="info-label">🎯 Practice Exercise</span>
+      <h4>Experiment: Change the Network Architecture</h4>
+      <p>Try these modifications to the network and observe how accuracy changes:</p>
+      <ul style="margin-top:0.5rem">
+        <li>Add a third hidden layer: <code>keras.layers.Dense(32, activation='relu')</code></li>
+        <li>Increase epochs from 5 to 10</li>
+        <li>Add a Dropout layer to reduce overfitting: <code>keras.layers.Dropout(0.2)</code></li>
+        <li>Change the number of neurons in the first hidden layer from 128 to 256</li>
+      </ul>
+      <p style="margin-top:0.75rem">Each change will affect your accuracy. This hands-on experimentation is exactly how ML engineers tune real models.</p>
+    </div>
+
+    <div class="info-box">
+      <span class="info-label">Key Takeaway</span>
+      <p>Neural networks learn by adjusting the weights of millions of connections through a process called backpropagation — making small corrections based on how wrong each prediction was. "Deep" learning just means many layers. The layers learn progressively more complex features — from simple patterns in early layers to complex concepts in later layers. You've now built and trained a real deep learning model that achieves near-human accuracy on handwritten digit recognition.</p>
+    </div>
+
+  </div>
+
+  <div class="lesson-nav">
+    <a href="lesson-ai-4.html" class="nav-link">
+      <span class="nav-label">← Previous</span>
+      <span class="nav-title">Your First ML Model</span>
+    </a>
+    <a href="lesson-ai-6.html" class="nav-link next">
+      <span class="nav-label">Next Lesson →</span>
+      <span class="nav-title">Computer Vision — How AI Sees</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Tech.talk_official</div>
+      <div class="footer-copy">© 2025 Tech Talk Official. Made with ❤️ in Maharashtra, India.</div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
